@@ -1,0 +1,6 @@
+{
+  "name": "EMGIS LAB – PHÒNG THÍ NGHIỆM VĂN HÓA BẢN ĐỊA",
+  "description": "Phòng thí nghiệm STEM số tương tác, kết nối di sản văn hóa bản địa và khoa học tự nhiên. Khám phá khoa học từ di sản và đời sống.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
