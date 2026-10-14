@@ -19,6 +19,10 @@ import { StationsMapGrid } from './components/StationsMapGrid';
 import { Station01ChiengMuong } from './labs/Station01ChiengMuong';
 import { Station02ThoCam } from './labs/Station02ThoCam';
 import { Station03NhaSan } from './labs/Station03NhaSan';
+import { Station06Dyeing } from './labs/Station06Dyeing';
+import { Station07Flute } from './labs/Station07Flute';
+import { MenLaFermentationLab } from './labs/MenLaFermentationLab';
+import { Station16RoofDrainage } from './labs/Station16RoofDrainage';
 import { GenericStationLab } from './labs/GenericStationLab';
 import { TamDaoClimateLab } from './labs/TamDaoClimateLab';
 import { ResearchHub } from './research/ResearchHub';
@@ -318,7 +322,13 @@ export default function App() {
             {activeStationId === 1 && <Station01ChiengMuong />}
             {activeStationId === 2 && <Station02ThoCam />}
             {activeStationId === 3 && <Station03NhaSan />}
-            {activeStationId >= 4 && <GenericStationLab stationId={activeStationId} />}
+            {activeStationId === 6 && <Station06Dyeing />}
+            {activeStationId === 7 && <Station07Flute />}
+            {activeStationId === 14 && <MenLaFermentationLab />}
+            {activeStationId === 16 && <Station16RoofDrainage />}
+            {![1, 2, 3, 6, 7, 14, 16].includes(activeStationId) && (
+              <GenericStationLab stationId={activeStationId} />
+            )}
           </div>
         )}
 

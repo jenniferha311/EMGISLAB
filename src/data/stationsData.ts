@@ -778,56 +778,55 @@ export const STATIONS_DATA: StationMeta[] = [
   {
     id: 14,
     numberStr: '14',
-    title: 'Nơm bắt cá – Hình học không gian',
-    subtitle: 'Hình nón cụt, thể tích, diện tích xung quanh & mật độ nan',
-    stemDomain: 'mathematics',
-    stemDomainLabel: 'Hình học không gian & Đo lường',
-    culturalHeritage: 'Nông cụ nơm, đó, giỏ bắt cá vùng sông suối trung du và miền núi',
-    locationContext: 'Các suối ngòi vùng Phú Thọ, Hòa Bình, Tuyên Quang',
-    keyFormula: 'V = \\frac{\\pi h}{3} (R^2 + R r + r^2) \\quad | \\quad S_{xq} = \\pi (R + r) \\sqrt{h^2 + (R-r)^2}',
-    formulaDescription: 'Công thức tính thể tích và diện tích xung quanh của khối nón cụt tròn xoay.',
+    title: 'Rượu men lá – Vi sinh & Lên men',
+    subtitle: 'Sinh học vi sinh vật, enzym Amylase & quá trình lên men cồn yếm khí',
+    stemDomain: 'biology',
+    stemDomainLabel: 'Sinh học & Công nghệ vi sinh',
+    culturalHeritage: 'Bí quyết làm men lá và cất rượu truyền thống của người Tày, Nùng, Dao, Thái',
+    locationContext: 'Vùng cao Lạng Sơn, Tuyên Quang, Hà Giang, Phú Thọ',
+    keyFormula: '\\text{Tinh bột} \\xrightarrow{\\text{Amylase}} \\text{Glucose} \\xrightarrow{\\text{Zymase}} 2\\, \\text{C}_2\\text{H}_5\\text{OH} + 2\\, \\text{CO}_2',
+    formulaDescription: 'Cơ chế 2 pha: Đường hóa hiếu khí nhờ nấm mốc và Lên men yếm khí nhờ nấm men Saccharomyces.',
     steps: {
       context: {
-        title: 'Hình học thực dụng trong chiếc nơm tre',
-        description: 'Chiếc nơm có hình nón cụt: miệng trên nhỏ vừa tay thọc vào bắt cá, miệng dưới xòe rộng để úp trùm đàn cá dưới bùn. Thân nơm làm từ hàng trăm nan tre cật vót nhọn, buộc chụm bằng vành mây.',
-        culturalDetails: ['Khoảng cách giữa các nan tính toán vừa đủ để nước thoát nhanh khi úp nhưng cá không lọt qua'],
-        verifiedSources: ['Bảo tàng Nông nghiệp Việt Nam']
+        title: 'Bí quyết chọn thảo mộc rừng làm bánh men rượu',
+        description: 'Người vùng cao kết hợp lá men, riềng dại, vỏ quế, thảo quả giã cùng bột gạo nếp để tạo bánh men. Tinh dầu tự nhiên đóng vai trò chất kháng khuẩn, ức chế vi khuẩn chua và chọn lọc dòng nấm men có lợi.',
+        culturalDetails: ['Lá men rừng chứa bào tử nấm mốc và nấm men hoang dã', 'Ủ chum đất nung đậy kín lá chuối tạo môi trường yếm khí tối ưu'],
+        verifiedSources: ['Viện Công nghệ Sinh học - VAST', 'Hội Dân tộc học & Nhân học Việt Nam']
       },
       stemQuestion: {
-        question: 'Làm thế nào để tính chính xác thể tích không gian chụp cá và lượng tre nứa cần thiết để đan một chiếc nơm?',
-        contextExplanation: 'Khảo sát hình học khối nón cụt tròn xoay và mối liên hệ giữa chu vi đáy với số lượng nan tre.',
-        subQuestions: ['Khi tăng bán kính đáy R gấp rưỡi, thể tích không gian bên trong nơm tăng lên bao nhiêu phần trăm?']
+        question: 'Tại sao thời gian đầu ủ men cần để thoáng khí (hiếu khí), nhưng sau đó bắt buộc phải đậy kín hũ (yếm khí)?',
+        contextExplanation: 'Khảo sát nhu cầu oxy của nấm mốc để phát triển sợi tơ và quá trình hô hấp yếm khí của nấm men để chuyển hóa đường thành cồn.',
+        subQuestions: ['Nhiệt độ phòng ủ ảnh hưởng như thế nào đến tốc độ hoạt động của enzyme và sự sống của nấm men?']
       },
       prediction: {
-        prompt: 'Nếu tăng bán kính đáy dưới R từ 30 cm lên 45 cm (tăng 50%) trong khi giữ nguyên bán kính miệng r = 10 cm và chiều cao h = 60 cm, thể tích nơm sẽ thế nào?',
+        prompt: 'Nếu đậy kín hũ rượu ngay từ ngày đầu tiên khi chưa có tơ nấm mốc mọc, mẻ rượu sẽ ra sao?',
         options: [
-          { id: 'p1', label: 'Thể tích tăng hơn 80% vì thể tích phụ thuộc vào bình phương bán kính R²', explanation: 'Đúng theo công thức hình nón cụt, số hạng R² và R·r tăng rất nhanh.' },
-          { id: 'p2', label: 'Thể tích chỉ tăng đúng 50%', explanation: 'Sai, quan hệ thể tích phi tuyến với kích thước bán kính.' }
+          { id: 'p1', label: 'Quá trình đường hóa bị thiếu hụt, tinh bột không chuyển hết thành đường khiến rượu bị nhạt và chua', explanation: 'Nấm mốc cần oxy ở giai đoạn đầu để sinh trưởng và tiết enzyme Amylase.' },
+          { id: 'p2', label: 'Rượu sẽ lên men nhanh gấp đôi bình thường', explanation: 'Sai, nấm men không thể ăn tinh bột thô nếu chưa được nấm mốc cắt nhỏ thành glucose.' }
         ]
       },
       challenge: {
-        title: 'Thiết kế nơm cá tối ưu vật liệu',
-        scenario: 'Cho thể tích yêu cầu V = 45 lít (0.045 m³), hãy chọn kích thước h, R, r sao cho diện tích xung quanh S_xq nhỏ nhất (dùng ít nan tre nhất).',
-        criteria: ['Miệng trên r đủ rộng cho tay người (8 - 12 cm)', 'Miệng dưới R đủ bắt cá (25 - 40 cm)', 'Tính số lượng nan nơm cần vót'],
-        task: 'Mô phỏng tương tác 3D nón cụt và kiểm tra kết quả tính toán.'
+        title: 'Lên men mẻ rượu men lá chuẩn 30° cồn',
+        scenario: 'Điều chỉnh nhiệt độ phòng ủ (28°C - 32°C), chọn đúng vị thảo mộc kháng khuẩn và chuyển chế độ yếm khí để đạt độ cồn tối ưu.',
+        criteria: ['Nồng độ cồn bỗng rượu đạt ≥ 12% ABV', 'Rượu sau chưng cất đạt 30° - 35° vol'],
+        task: 'Soi kính hiển vi ảo để đếm mật độ nấm men nảy chồi.'
       },
       reflection: {
-        questions: ['Người thợ đan nơm đã ước lượng thể tích và nan tre bằng kinh nghiệm như thế nào?'],
-        culturalConnection: 'Sự khéo léo biến vật liệu tự nhiên thành công cụ mưu sinh gắn bó mật thiết với dòng suối quê hương.',
-        physicalLimitations: ['Hình dáng chiếc nơm thực tế có độ phình cong nhẹ chứ không phải hình nón cụt thẳng tuyệt đối.']
+        questions: ['Tại sao việc sử dụng thảo dược tự nhiên trong men lá là kinh nghiệm công nghệ sinh học xuất sắc của cha ông?'],
+        culturalConnection: 'Sự hòa hợp giữa con người với rừng tự nhiên trong việc chắt lọc các loài cây cỏ quý giá.',
+        physicalLimitations: ['Mô hình vi sinh vật học giáo dục; việc thực hành làm men thật cần đảm bảo vệ sinh an toàn thực phẩm.']
       }
     },
     scientificBasis: {
-      principles: ['Hình học không gian khối tròn xoay', 'Tích phân tính thể tích vật thể quay', 'Tối ưu hóa hình học cực trị'],
+      principles: ['Quá trình đường hóa tinh bột (Saccharification)', 'Lên men rượu yếm khí (Ethanol Fermentation)', 'Hoạt tính kìm khuẩn của tinh dầu thực vật'],
       variables: [
-        { symbol: 'r_top', name: 'Bán kính đáy trên', unit: 'cm', range: '6.0 - 15.0 cm', description: 'Miệng thọc tay bắt cá' },
-        { symbol: 'R_bot', name: 'Bán kính đáy dưới', unit: 'cm', range: '20.0 - 50.0 cm', description: 'Miệng úp cá tiếp xúc đáy bùn' },
-        { symbol: 'h', name: 'Chiều cao nơm', unit: 'cm', range: '40.0 - 90.0 cm', description: 'Khoảng cách vuông góc giữa hai đáy' }
+        { symbol: 'T', name: 'Nhiệt độ phòng ủ', unit: '°C', range: '18 - 38 °C', description: 'Nhiệt độ tối ưu 28 - 32 °C' },
+        { symbol: 't', name: 'Thời gian ủ men', unit: 'ngày', range: '1 - 14 ngày', description: 'Chu kỳ chuyển hóa bỗng rượu' }
       ],
-      assumptions: ['Mô hình nón cụt tròn đều lý tưởng'],
-      limitations: ['Số nan tre ước tính dựa trên khoảng cách khe nan trung bình 8-12 mm.'],
-      safetyNotes: ['Đầu nhọn của nan nơm thật có thể gây trầy xước da tay, cần mài cùn đầu khi làm mẫu thí nghiệm.'],
-      references: ['Weisstein, E. W. (2002). CRC Concise Encyclopedia of Mathematics. Chapman & Hall/CRC.']
+      assumptions: ['Chủng nấm men thuần khiết chịu được nồng độ cồn đến 15%'],
+      limitations: ['Rượu sau chưng cất chỉ minh họa nguyên lý vật lý ngưng tụ.'],
+      safetyNotes: ['Không uống các sản phẩm thí nghiệm tự phát; chú ý an toàn lửa khi chưng cất.'],
+      references: ['Steinkraus, K. H. (1995). Handbook of Indigenous Fermented Foods. CRC Press.']
     }
   },
   {
