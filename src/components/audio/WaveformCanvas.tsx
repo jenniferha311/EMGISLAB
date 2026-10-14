@@ -12,7 +12,7 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
   isPlaying,
   staticData,
   height = 140,
-  label = 'Dạng sóng (Waveform: Thời gian vs Biên độ)',
+  label = 'Dạng sóng dao động (Waveform: Thời gian vs Biên độ)',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animIdRef = useRef<number | null>(null);
@@ -27,18 +27,18 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       // Draw static waveform
       const width = canvas.width;
       const h = canvas.height;
-      ctx.fillStyle = '#0f172a';
+      ctx.fillStyle = '#172722';
       ctx.fillRect(0, 0, width, h);
 
       // Grid lines
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = '#273C35';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
       ctx.lineTo(width, h / 2);
       ctx.stroke();
 
-      ctx.strokeStyle = '#10b981';
+      ctx.strokeStyle = '#D6AA55';
       ctx.lineWidth = 2;
       ctx.beginPath();
       const sliceWidth = width / staticData.length;
@@ -66,12 +66,12 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       const width = canvas.width;
       const h = canvas.height;
 
-      // Dark slate background
-      ctx.fillStyle = '#0f172a';
+      // Dark forest slate background
+      ctx.fillStyle = '#172722';
       ctx.fillRect(0, 0, width, h);
 
       // Horizontal center line
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = '#273C35';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
@@ -79,7 +79,7 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       ctx.stroke();
 
       // Time grid marks (ms)
-      ctx.fillStyle = '#64748b';
+      ctx.fillStyle = '#8AA39B';
       ctx.font = '10px JetBrains Mono, monospace';
       ctx.fillText('0 ms', 6, h - 6);
       ctx.fillText('10 ms', width / 4, h - 6);
@@ -87,7 +87,7 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       ctx.fillText('40 ms', (width * 3) / 4, h - 6);
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = isPlaying ? '#34d399' : '#059669';
+      ctx.strokeStyle = isPlaying ? '#D6AA55' : '#8AA39B';
       ctx.beginPath();
 
       const sliceWidth = width / bufferLength;
@@ -117,12 +117,14 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
   }, [isPlaying, staticData]);
 
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <div className="flex items-center justify-between text-xs text-stone-500 font-mono">
-        <span>{label}</span>
-        <span className="text-emerald-700 font-medium">{isPlaying ? '● Đang dao động' : '○ Sẵn sàng'}</span>
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex items-center justify-between text-xs text-[#556D65] font-mono">
+        <span className="font-semibold text-[#20332D]">{label}</span>
+        <span className={isPlaying ? 'text-[#174C3C] font-bold' : 'text-[#556D65]'}>
+          {isPlaying ? '● Đang dao động' : '○ Sẵn sàng'}
+        </span>
       </div>
-      <div className="relative rounded border border-stone-300 overflow-hidden bg-slate-900 shadow-inner">
+      <div className="relative rounded-xl border border-[#E8E2D5] overflow-hidden bg-[#172722] shadow-inner">
         <canvas
           ref={canvasRef}
           width={640}

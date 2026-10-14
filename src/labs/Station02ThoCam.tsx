@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Download, RotateCcw, CheckCircle2, Grid, Sparkles, Copy, FileText } from 'lucide-react';
+import { Download, RotateCcw, CheckCircle2, Grid, Sparkles, FileText, ArrowRight, BookOpen, HelpCircle, Sliders, Award } from 'lucide-react';
 import { STATIONS_DATA } from '../data/stationsData';
 import { saveResearchLog, getCurrentStudent } from '../utils/storage';
+import { MuongPatternBorder } from '../components/MuongPatternBorder';
 
 const MOTIF_TEMPLATES: Record<string, { name: string; grid: number[][] }> = {
   qua_tram: {
@@ -46,10 +47,10 @@ const MOTIF_TEMPLATES: Record<string, { name: string; grid: number[][] }> = {
 };
 
 const COLOR_PALETTES = [
-  { id: 'cham', name: 'Xanh chàm & Trắng mộc', fg: '#1e3a8a', bg: '#fef3c7', accent: '#3b82f6' },
-  { id: 'vang_do', name: 'Đỏ vang & Vàng nghệ', fg: '#b91c1c', bg: '#fef9c3', accent: '#d97706' },
-  { id: 'rung_nui', name: 'Xanh rừng & Đất nung', fg: '#1b4332', bg: '#ffedd5', accent: '#bc4749' },
-  { id: 'huyen_bi', name: 'Đen vỏ cây & Trắng', fg: '#18181b', bg: '#f4f4f5', accent: '#71717a' },
+  { id: 'cham', name: 'Xanh chàm & Trắng ngà', fg: '#174C3C', bg: '#FAF7F0', accent: '#D6AA55' },
+  { id: 'vang_do', name: 'Đỏ đất & Vàng nghệ', fg: '#A94438', bg: '#FAF7F0', accent: '#D6AA55' },
+  { id: 'rung_nui', name: 'Vàng ấm & Xanh đen', fg: '#D6AA55', bg: '#20332D', accent: '#A94438' },
+  { id: 'huyen_bi', name: 'Đen vỏ cây & Trắng', fg: '#20332D', bg: '#FFFFFF', accent: '#174C3C' },
 ];
 
 export const Station02ThoCam: React.FC = () => {
@@ -149,8 +150,10 @@ export const Station02ThoCam: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `tho_cam_frieze_pattern_${currentMotifKey}.svg`;
+    link.download = `tho_cam_muong_${currentMotifKey}_frieze.svg`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
@@ -160,7 +163,7 @@ export const Station02ThoCam: React.FC = () => {
       studentCode: student,
       stationId: 2,
       stationTitle: station.title,
-      hypothesis: 'Khảo sát nhóm đối xứng Frieze và các phép biến hình affine trên dải hoa văn thổ cẩm.',
+      hypothesis: 'Khảo sát nhóm đối xứng phẳng Frieze và các phép biến hình trong hoa văn dệt cạp váy Mường.',
       selectedPrediction,
       changedVariables: {
         motif: currentMotifKey,
@@ -171,11 +174,12 @@ export const Station02ThoCam: React.FC = () => {
         palette: palette.name,
       },
       recordedResults: {
-        friezeSymmetryType: mirrorX && mirrorY ? 'p2mm (Đối xứng 2 trục & tâm)' : mirrorX ? 'p1m1 (Đối xứng trục dọc)' : 'p1 (Chỉ tịnh tiến)',
-        activeCells: transformedMotif.flat().filter((v) => v === 1).length,
+        symmetryGroup: mirrorX && mirrorY ? 'p2mm (Diedral)' : mirrorX ? 'p1m1' : 'p1',
+        totalPoints: customGrid.flat().filter((x) => x === 1).length,
+        friezeLength: repeatCount * 8,
       },
-      observationNotes: `Tạo dải viền thổ cẩm chu kỳ ${repeatCount} với góc quay ${rotation}° và đối xứng [X:${mirrorX}, Y:${mirrorY}].`,
-      reflectionAnswers: 'Khung dệt của người phụ nữ miền núi là một cấu trúc tính toán số nguyên chính xác.',
+      observationNotes: `Tạo thành công dải hoa văn ${currentMotifKey} gồm ${repeatCount} chu kỳ với phép quay ${rotation}° và đối xứng trục [X:${mirrorX}, Y:${mirrorY}].`,
+      reflectionAnswers: 'Tư duy hình học không gian và tính chu kỳ đã được các bà, các mẹ người Mường đúc kết qua từng đường thoi dệt cạp váy.',
       isVerifiedRealData: false,
     });
     setSaveSuccess(`Đã lưu vào Nhật ký của học sinh ${student}!`);
@@ -185,26 +189,43 @@ export const Station02ThoCam: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border border-stone-200 rounded-lg p-5 shadow-xs">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-mono text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-            TRẠM {station.numberStr}
-          </span>
-          <span className="text-xs text-stone-500 font-medium">·</span>
-          <span className="text-xs text-stone-600 font-medium">{station.stemDomainLabel}</span>
+      <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0">
+          <MuongPatternBorder variant="subtle" height={5} />
         </div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">{station.title}</h1>
-        <p className="text-sm text-stone-600 mt-1">{station.subtitle}</p>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2 pt-1">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
+              TRẠM {station.numberStr}
+            </span>
+            <span className="text-xs text-[#D6AA55]">·</span>
+            <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
+          </div>
+          <span className="text-xs text-[#556D65] font-medium">{station.locationContext}</span>
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#174C3C] tracking-tight">{station.title}</h1>
+        <p className="text-sm sm:text-base text-[#556D65] mt-1.5 leading-relaxed">{station.subtitle}</p>
+
+        <div className="mt-4 pt-3.5 border-t border-[#E8E2D5] flex flex-wrap items-center justify-between gap-2 text-xs text-[#556D65]">
+          <div>
+            <strong className="text-[#20332D]">Di sản văn hóa:</strong> {station.culturalHeritage}
+          </div>
+          <div className="font-mono text-[#174C3C] font-semibold">
+            {station.keyFormula}
+          </div>
+        </div>
       </div>
 
       {/* 7-Step Navigation */}
-      <div className="flex items-center overflow-x-auto pb-1 gap-1 border-b border-stone-200">
+      <div className="flex items-center overflow-x-auto pb-1 gap-1.5 border-b border-[#E8E2D5]">
         {[
           { id: 1, label: '1. Khám phá bối cảnh' },
           { id: 2, label: '2. Câu hỏi STEM' },
           { id: 3, label: '3. Dự đoán' },
-          { id: 4, label: '4. Thí nghiệm số (Trực tiếp)' },
-          { id: 5, label: '5. Phân tích dữ liệu' },
+          { id: 4, label: '4. Thí nghiệm số (Dệt ma trận)' },
+          { id: 5, label: '5. Phân tích đối xứng' },
           { id: 6, label: '6. Thử thách' },
           { id: 7, label: '7. Phản tư' },
         ].map((tab) => (
@@ -212,10 +233,10 @@ export const Station02ThoCam: React.FC = () => {
             key={tab.id}
             type="button"
             onClick={() => setActiveStep(tab.id)}
-            className={`px-3 py-2 text-xs font-medium whitespace-nowrap rounded-t border-b-2 transition-colors ${
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-bold whitespace-nowrap rounded-t-xl border-b-2 transition-all ${
               activeStep === tab.id
-                ? 'border-emerald-700 text-emerald-900 bg-white font-semibold'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
+                ? 'border-[#174C3C] text-[#174C3C] bg-white shadow-2xs'
+                : 'border-transparent text-[#556D65] hover:text-[#20332D] hover:bg-white/60'
             }`}
           >
             {tab.label}
@@ -224,8 +245,8 @@ export const Station02ThoCam: React.FC = () => {
       </div>
 
       {saveSuccess && (
-        <div className="flex items-center gap-2 p-3 text-xs bg-emerald-50 text-emerald-900 border border-emerald-300 rounded">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="flex items-center gap-2.5 p-3.5 text-xs bg-[#EBF2EE] text-[#174C3C] border border-[#174C3C]/30 rounded-2xl shadow-2xs font-medium">
+          <CheckCircle2 className="w-4 h-4 text-[#174C3C] shrink-0" />
           <span>{saveSuccess}</span>
         </div>
       )}
@@ -233,23 +254,23 @@ export const Station02ThoCam: React.FC = () => {
       {/* STEP 4: Interactive Weaving Matrix & Transformations */}
       {activeStep === 4 && (
         <div className="space-y-6">
-          <div className="p-3 bg-amber-50 border border-amber-300 rounded text-xs text-amber-900 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-mono">
+          <div className="p-4 bg-[#FBF6EA] border border-[#D6AA55]/50 rounded-2xl text-xs sm:text-sm text-[#20332D] flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <span className="font-bold bg-[#D6AA55] text-[#20332D] px-2 py-0.5 rounded-lg font-mono text-[11px]">
                 MÔ PHỎNG HÌNH HỌC TOÁN HỌC
               </span>
               <span>Lưới điểm dệt 8×8 tương tác và các phép biến hình affine tạo dải hoa văn Frieze.</span>
             </div>
-            <span className="font-mono text-stone-500 hidden sm:inline">Affine Transformations</span>
+            <span className="font-mono text-[#556D65] hidden sm:inline">Affine Transformations</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left: Motif Editor & Templates (5 cols) */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="bg-white p-4 rounded-lg border border-stone-200 space-y-3">
+            <div className="lg:col-span-5 space-y-5">
+              <div className="bg-white p-5 rounded-2xl border border-[#E8E2D5] shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Grid className="w-4 h-4 text-emerald-700" />
+                  <h3 className="text-xs font-bold text-[#174C3C] uppercase tracking-wider flex items-center gap-1.5">
+                    <Grid className="w-4 h-4 text-[#D6AA55]" />
                     Đơn vị Motif gốc (8 × 8 ô dệt)
                   </h3>
                   <button
@@ -261,18 +282,18 @@ export const Station02ThoCam: React.FC = () => {
                           .map(() => Array(8).fill(0))
                       )
                     }
-                    className="text-[11px] text-stone-500 hover:text-stone-800 flex items-center gap-1"
+                    className="min-h-[36px] px-2.5 py-1 text-xs text-[#556D65] hover:text-[#A94438] hover:bg-[#FBF0EE] rounded-lg transition-colors flex items-center gap-1"
                   >
-                    <RotateCcw className="w-3 h-3" /> Xóa trắng
+                    <RotateCcw className="w-3.5 h-3.5" /> Xóa trắng
                   </button>
                 </div>
-                <p className="text-xs text-stone-500">
-                  Bấm vào từng ô để dệt sợi màu (1) hoặc để trống sợi mộc (0):
+                <p className="text-xs text-[#556D65]">
+                  Chạm vào từng ô vuông để dệt sợi màu (1) hoặc sợi nền (0):
                 </p>
 
                 {/* 8x8 Interactive Grid */}
                 <div
-                  className="grid grid-cols-8 gap-1 p-2 rounded border border-stone-300 max-w-[280px] mx-auto shadow-inner"
+                  className="grid grid-cols-8 gap-1.5 p-3 rounded-xl border border-[#E8E2D5] max-w-[290px] mx-auto shadow-inner"
                   style={{ backgroundColor: palette.bg }}
                 >
                   {customGrid.map((row, r) =>
@@ -281,60 +302,62 @@ export const Station02ThoCam: React.FC = () => {
                         key={`${r}-${c}`}
                         type="button"
                         onClick={() => handleToggleCell(r, c)}
-                        className={`w-7 h-7 rounded-xs border transition-colors ${
+                        className={`w-7 h-7 rounded-sm border transition-all ${
                           cell === 1
-                            ? 'border-transparent shadow-xs'
-                            : 'border-stone-300/40 hover:bg-stone-300/20'
+                            ? 'border-transparent shadow-xs scale-95'
+                            : 'border-[#20332D]/15 hover:bg-[#20332D]/10'
                         }`}
                         style={{
                           backgroundColor: cell === 1 ? palette.fg : 'transparent',
                         }}
+                        aria-label={`Ô dệt hàng ${r + 1} cột ${c + 1}`}
                       />
                     ))
                   )}
                 </div>
 
                 {/* Template Motif Selectors */}
-                <div className="space-y-1.5 pt-2 border-t border-stone-100">
-                  <span className="text-xs font-semibold text-stone-700">Mẫu hoa văn cổ truyền:</span>
-                  <div className="grid grid-cols-1 gap-1">
+                <div className="space-y-2 pt-2 border-t border-[#E8E2D5]">
+                  <span className="text-xs font-bold text-[#20332D]">Mẫu hoa văn cổ truyền Mường:</span>
+                  <div className="grid grid-cols-1 gap-1.5">
                     {Object.entries(MOTIF_TEMPLATES).map(([key, item]) => (
                       <button
                         key={key}
                         type="button"
                         onClick={() => handleSelectTemplate(key)}
-                        className={`p-2 text-left rounded text-xs border transition-colors ${
+                        className={`min-h-[44px] p-2.5 text-left rounded-xl text-xs border transition-all flex items-center justify-between ${
                           currentMotifKey === key
-                            ? 'bg-emerald-50 text-emerald-900 border-emerald-400 font-medium'
-                            : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                            ? 'bg-[#EBF2EE] text-[#174C3C] border-[#174C3C] font-bold shadow-2xs'
+                            : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
                         }`}
                       >
-                        {item.name}
+                        <span>{item.name}</span>
+                        {currentMotifKey === key && <CheckCircle2 className="w-4 h-4 text-[#174C3C]" />}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Color Palettes */}
-                <div className="space-y-1.5 pt-2 border-t border-stone-100">
-                  <span className="text-xs font-semibold text-stone-700">Bảng màu tự nhiên:</span>
-                  <div className="grid grid-cols-2 gap-1.5">
+                <div className="space-y-2 pt-2 border-t border-[#E8E2D5]">
+                  <span className="text-xs font-bold text-[#20332D]">Bảng màu dệt thổ cẩm tự nhiên:</span>
+                  <div className="grid grid-cols-2 gap-2">
                     {COLOR_PALETTES.map((p, idx) => (
                       <button
                         key={p.id}
                         type="button"
                         onClick={() => setActivePaletteIndex(idx)}
-                        className={`p-1.5 rounded text-xs border flex items-center gap-2 ${
+                        className={`min-h-[44px] p-2 rounded-xl text-xs border flex items-center gap-2.5 transition-all ${
                           activePaletteIndex === idx
-                            ? 'border-emerald-600 bg-emerald-50 font-medium'
-                            : 'border-stone-200 hover:bg-stone-50'
+                            ? 'border-[#174C3C] bg-[#EBF2EE] font-bold text-[#174C3C]'
+                            : 'border-[#E8E2D5] bg-white text-[#20332D] hover:bg-[#FAF7F0]'
                         }`}
                       >
                         <div
-                          className="w-4 h-4 rounded-full border border-stone-400"
+                          className="w-4 h-4 rounded-full border border-black/20 shrink-0"
                           style={{ backgroundColor: p.fg }}
                         />
-                        <span className="truncate text-[11px]">{p.name}</span>
+                        <span className="truncate text-xs">{p.name}</span>
                       </button>
                     ))}
                   </div>
@@ -343,33 +366,33 @@ export const Station02ThoCam: React.FC = () => {
             </div>
 
             {/* Right: Transformation Sliders & Frieze Strip Display (7 cols) */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="bg-white p-4 rounded-lg border border-stone-200 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-emerald-700" />
+            <div className="lg:col-span-7 space-y-5">
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E8E2D5] shadow-xs space-y-5">
+                <div className="flex items-center justify-between border-b border-[#E8E2D5] pb-3">
+                  <h3 className="text-xs font-bold text-[#174C3C] uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#D6AA55]" />
                     Các phép biến hình toán học
                   </h3>
-                  <span className="font-mono text-xs text-stone-600">
-                    Nhóm đối xứng: {mirrorX && mirrorY ? 'p2mm (Diedral)' : mirrorX ? 'p1m1' : 'p1 (Cyclic)'}
+                  <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
+                    Nhóm: {mirrorX && mirrorY ? 'p2mm (Diedral)' : mirrorX ? 'p1m1' : 'p1 (Cyclic)'}
                   </span>
                 </div>
 
                 {/* Transform controls */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-stone-50 p-3 rounded border border-stone-200">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs bg-[#FAF7F0] p-4 rounded-xl border border-[#E8E2D5]">
                   {/* Rotation */}
                   <div>
-                    <label className="text-stone-600 font-medium">Phép quay R_θ:</label>
-                    <div className="flex items-center gap-1 mt-1">
+                    <label className="text-[#20332D] font-bold block mb-1">Phép quay R_θ:</label>
+                    <div className="grid grid-cols-4 gap-1">
                       {[0, 90, 180, 270].map((deg) => (
                         <button
                           key={deg}
                           type="button"
                           onClick={() => setRotation(deg)}
-                          className={`flex-1 py-1 rounded text-xs font-mono border ${
+                          className={`min-h-[40px] py-1 rounded-lg text-xs font-mono font-bold border transition-colors ${
                             rotation === deg
-                              ? 'bg-emerald-800 text-white font-bold border-emerald-800'
-                              : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-100'
+                              ? 'bg-[#174C3C] text-white border-[#174C3C]'
+                              : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
                           }`}
                         >
                           {deg}°
@@ -380,15 +403,15 @@ export const Station02ThoCam: React.FC = () => {
 
                   {/* Mirror Reflections */}
                   <div>
-                    <label className="text-stone-600 font-medium">Đối xứng trục (Reflection):</label>
-                    <div className="flex items-center gap-1 mt-1">
+                    <label className="text-[#20332D] font-bold block mb-1">Đối xứng trục (Reflection):</label>
+                    <div className="grid grid-cols-2 gap-1">
                       <button
                         type="button"
                         onClick={() => setMirrorX(!mirrorX)}
-                        className={`flex-1 py-1 rounded text-xs border ${
+                        className={`min-h-[40px] py-1 px-1 rounded-lg text-xs font-bold border transition-colors ${
                           mirrorX
-                            ? 'bg-emerald-800 text-white font-medium border-emerald-800'
-                            : 'bg-white text-stone-700 border-stone-300'
+                            ? 'bg-[#174C3C] text-white border-[#174C3C]'
+                            : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
                         }`}
                       >
                         Trục dọc S_y
@@ -396,10 +419,10 @@ export const Station02ThoCam: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setMirrorY(!mirrorY)}
-                        className={`flex-1 py-1 rounded text-xs border ${
+                        className={`min-h-[40px] py-1 px-1 rounded-lg text-xs font-bold border transition-colors ${
                           mirrorY
-                            ? 'bg-emerald-800 text-white font-medium border-emerald-800'
-                            : 'bg-white text-stone-700 border-stone-300'
+                            ? 'bg-[#174C3C] text-white border-[#174C3C]'
+                            : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
                         }`}
                       >
                         Trục ngang S_x
@@ -409,42 +432,42 @@ export const Station02ThoCam: React.FC = () => {
 
                   {/* Repetition */}
                   <div>
-                    <label className="text-stone-600 font-medium">Số chu kỳ lặp T(dx):</label>
-                    <div className="flex items-center gap-2 mt-1">
+                    <label className="text-[#20332D] font-bold block mb-1">Số chu kỳ lặp T(dx):</label>
+                    <div className="flex items-center gap-2 mt-2">
                       <input
                         type="range"
                         min="2"
                         max="8"
                         value={repeatCount}
                         onChange={(e) => setRepeatCount(parseInt(e.target.value))}
-                        className="w-full accent-emerald-700"
+                        className="w-full accent-[#174C3C]"
                       />
-                      <span className="font-mono text-stone-700 font-bold">{repeatCount}</span>
+                      <span className="font-mono text-[#174C3C] font-bold text-sm w-5">{repeatCount}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Live Frieze Band Preview */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs text-stone-500">
-                    <span>Dải viền Frieze thổ cẩm hoàn chỉnh:</span>
-                    <span className="font-mono text-emerald-800">
-                      Độ dài dải: {repeatCount * 8} sợi dọc × 8 sợi ngang
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[#556D65]">
+                    <span className="font-semibold text-[#20332D]">Dải viền Frieze thổ cẩm hoàn chỉnh:</span>
+                    <span className="font-mono text-[#174C3C] font-bold">
+                      {repeatCount * 8} sợi dọc × 8 sợi ngang
                     </span>
                   </div>
 
                   <div
-                    className="p-3 rounded border border-stone-300 overflow-x-auto shadow-inner"
+                    className="p-4 rounded-xl border border-[#E8E2D5] overflow-x-auto shadow-inner"
                     style={{ backgroundColor: palette.bg }}
                   >
-                    <div className="flex gap-0.5 min-w-max">
+                    <div className="flex gap-1 min-w-max">
                       {Array.from({ length: repeatCount }).map((_, rep) => (
-                        <div key={rep} className="grid grid-cols-8 gap-0.5 border-r border-stone-300/60 pr-0.5">
+                        <div key={rep} className="grid grid-cols-8 gap-0.5 border-r border-[#20332D]/20 pr-1">
                           {transformedMotif.map((row, r) =>
                             row.map((val, c) => (
                               <div
                                 key={`${rep}-${r}-${c}`}
-                                className="w-3.5 h-3.5 rounded-xs"
+                                className="w-3.5 h-3.5 rounded-2xs"
                                 style={{
                                   backgroundColor: val === 1 ? palette.fg : 'transparent',
                                 }}
@@ -458,8 +481,8 @@ export const Station02ThoCam: React.FC = () => {
                 </div>
 
                 {/* Mathematical Formulation Display */}
-                <div className="p-3 bg-stone-50 rounded border border-stone-200 text-xs font-mono text-stone-700 space-y-1">
-                  <div className="text-stone-500 font-sans font-semibold">Công thức ánh xạ hình học:</div>
+                <div className="p-4 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] text-xs font-mono text-[#20332D] space-y-1.5">
+                  <div className="text-[#174C3C] font-sans font-bold">Công thức ánh xạ hình học phẳng:</div>
                   <div>
                     Vector tịnh tiến: T = (k · 8 · Δx, 0) với k ∈ [0, {repeatCount - 1}]
                   </div>
@@ -469,22 +492,22 @@ export const Station02ThoCam: React.FC = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                   <button
                     type="button"
                     onClick={handleExportSVG}
-                    className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 rounded text-xs font-medium flex items-center gap-1.5"
+                    className="min-h-[44px] px-5 py-2.5 bg-white hover:bg-[#FAF7F0] text-[#20332D] border border-[#E8E2D5] rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-colors shadow-2xs"
                   >
-                    <Download className="w-3.5 h-3.5 text-stone-600" />
+                    <Download className="w-4 h-4 text-[#174C3C]" />
                     Xuất file vector SVG
                   </button>
 
                   <button
                     type="button"
                     onClick={handleSaveToJournal}
-                    className="px-4 py-2 bg-emerald-800 text-white rounded text-xs font-medium hover:bg-emerald-900 flex items-center gap-1.5"
+                    className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all flex items-center gap-2 shadow-xs active:scale-98"
                   >
-                    <FileText className="w-3.5 h-3.5" />
+                    <FileText className="w-4 h-4 text-[#D6AA55]" />
                     Lưu hoa văn vào Nhật ký
                   </button>
                 </div>
@@ -496,35 +519,80 @@ export const Station02ThoCam: React.FC = () => {
 
       {/* STEP 1: Context */}
       {activeStep === 1 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-lg font-bold text-stone-900">{station.steps.context.title}</h2>
-          <p>{station.steps.context.description}</p>
-          <ul className="space-y-1.5 list-disc pl-5">
-            {station.steps.context.culturalDetails.map((d, i) => (
-              <li key={i}>{d}</li>
-            ))}
-          </ul>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <BookOpen className="w-4 h-4 text-[#D6AA55]" />
+            Bối cảnh di sản & Nghệ thuật dệt Mường
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">{station.steps.context.title}</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed font-normal">{station.steps.context.description}</p>
+          <div className="bg-[#FAF7F0] p-5 rounded-2xl border border-[#E8E2D5] space-y-3">
+            <h3 className="text-xs font-bold text-[#174C3C] uppercase tracking-wider">Đặc điểm đồ án hoa văn dệt:</h3>
+            <ul className="space-y-2 text-sm text-[#20332D]">
+              {station.steps.context.culturalDetails.map((d, i) => (
+                <li key={i} className="flex items-start gap-2.5">
+                  <span className="text-[#A94438] font-bold mt-0.5">•</span>
+                  <span className="leading-relaxed">{d}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Tiếp tục: Bước 2 – Câu hỏi STEM →
+            </button>
+          </div>
         </div>
       )}
 
       {/* STEP 2: STEM Question */}
       {activeStep === 2 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-lg font-bold text-stone-900">{station.steps.stemQuestion.question}</h2>
-          <p>{station.steps.stemQuestion.contextExplanation}</p>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-[#D6AA55]" />
+            Vấn đề toán học cốt lõi
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">{station.steps.stemQuestion.question}</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">{station.steps.stemQuestion.contextExplanation}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(1)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại Bước 1
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(3)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Tiếp tục: Bước 3 – Đưa ra dự đoán →
+            </button>
+          </div>
         </div>
       )}
 
       {/* STEP 3: Prediction */}
       {activeStep === 3 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
-          <h2 className="text-base font-bold text-stone-900">{station.steps.prediction.prompt}</h2>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <Sliders className="w-4 h-4 text-[#D6AA55]" />
+            Hình thành giả thuyết toán học
+          </div>
+          <h2 className="text-base sm:text-lg font-bold text-[#20332D]">{station.steps.prediction.prompt}</h2>
           <div className="space-y-3">
             {station.steps.prediction.options.map((opt) => (
               <label
                 key={opt.id}
-                className={`flex items-start gap-3 p-3.5 rounded border cursor-pointer ${
-                  selectedPrediction === opt.id ? 'border-emerald-600 bg-emerald-50' : 'border-stone-200'
+                className={`flex items-start gap-3.5 p-4 rounded-xl border cursor-pointer transition-all ${
+                  selectedPrediction === opt.id
+                    ? 'border-[#174C3C] bg-[#EBF2EE] ring-1 ring-[#174C3C]/30'
+                    : 'border-[#E8E2D5] hover:bg-[#FAF7F0]'
                 }`}
               >
                 <input
@@ -532,35 +600,83 @@ export const Station02ThoCam: React.FC = () => {
                   name="p2_pred"
                   checked={selectedPrediction === opt.id}
                   onChange={() => setSelectedPrediction(opt.id)}
-                  className="mt-1 text-emerald-700"
+                  className="mt-1 text-[#174C3C] focus:ring-[#174C3C]"
                 />
                 <div>
-                  <div className="text-sm font-semibold text-stone-900">{opt.label}</div>
-                  <div className="text-xs text-stone-600">{opt.explanation}</div>
+                  <div className="text-sm font-bold text-[#20332D]">{opt.label}</div>
+                  <div className="text-xs text-[#556D65] mt-1 leading-relaxed">{opt.explanation}</div>
                 </div>
               </label>
             ))}
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(4)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Chuyển sang Bước 4: Thí nghiệm dệt →
+            </button>
           </div>
         </div>
       )}
 
       {/* STEP 5, 6, 7 */}
       {activeStep >= 5 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-base font-bold text-stone-900">
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <Award className="w-4 h-4 text-[#D6AA55]" />
+            {activeStep === 5 ? 'Phân tích đối xứng' : activeStep === 6 ? 'Thử thách STEM' : 'Phản tư & Di sản'}
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C]">
             {activeStep === 5
               ? 'Phân tích cấu trúc nhóm đối xứng Frieze'
               : activeStep === 6
               ? station.steps.challenge.title
-              : 'Phản tư & Di sản'}
+              : 'Phản tư toán học & Tri thức dân gian Mường'}
           </h2>
-          <p>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">
             {activeStep === 5
-              ? 'Dải hoa văn Frieze chỉ có đúng 7 nhóm đối xứng hình học trên mặt phẳng. Khung dệt truyền thống thường kết hợp nhóm p2mm (có cả trục đối xứng ngang và dọc).'
+              ? 'Dải hoa văn Frieze chỉ có đúng 7 nhóm đối xứng hình học trên mặt phẳng. Khung dệt truyền thống thường kết hợp nhóm p2mm (có cả trục đối xứng ngang và dọc), tạo nên sự cân bằng thị giác tuyệt đối.'
               : activeStep === 6
               ? station.steps.challenge.scenario
               : station.steps.reflection.culturalConnection}
           </p>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E8E2D5]">
+            <button
+              type="button"
+              onClick={() => setActiveStep(4)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại Thí nghiệm
+            </button>
+            {activeStep < 7 ? (
+              <button
+                type="button"
+                onClick={() => setActiveStep(activeStep + 1)}
+                className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+              >
+                Chuyển sang Bước {activeStep + 1} →
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleSaveToJournal}
+                className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] flex items-center gap-2 shadow-xs active:scale-98"
+              >
+                <CheckCircle2 className="w-4 h-4 text-[#D6AA55]" />
+                Hoàn thành & Lưu vào Nhật ký
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

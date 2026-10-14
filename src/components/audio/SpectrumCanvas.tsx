@@ -34,15 +34,15 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
       const width = canvas.width;
       const h = canvas.height;
 
-      ctx.fillStyle = '#090d16';
+      ctx.fillStyle = '#172722';
       ctx.fillRect(0, 0, width, h);
 
       // Grid lines
       drawGrid(ctx, width, h, maxFreq);
 
       // Curve
-      ctx.strokeStyle = '#f59e0b';
-      ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+      ctx.strokeStyle = '#D6AA55';
+      ctx.fillStyle = 'rgba(214, 170, 85, 0.18)';
       ctx.lineWidth = 2;
       ctx.beginPath();
 
@@ -77,13 +77,13 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
           const py = h - normalized * (h - 24) - 12;
 
           // Marker circle
-          ctx.fillStyle = '#ef4444';
+          ctx.fillStyle = '#A94438';
           ctx.beginPath();
-          ctx.arc(px, py, 4, 0, Math.PI * 2);
+          ctx.arc(px, py, 4.5, 0, Math.PI * 2);
           ctx.fill();
 
           // Text label
-          ctx.fillStyle = '#fef08a';
+          ctx.fillStyle = '#FAF7F0';
           ctx.font = 'bold 10px JetBrains Mono, monospace';
           const text = `f${idx + 1}:${peak.frequency}Hz`;
           ctx.fillText(text, Math.min(px - 15, width - 65), Math.max(py - 8, 14));
@@ -107,16 +107,16 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
       const width = canvas.width;
       const h = canvas.height;
 
-      ctx.fillStyle = '#090d16';
+      ctx.fillStyle = '#172722';
       ctx.fillRect(0, 0, width, h);
 
       drawGrid(ctx, width, h, maxFreq);
 
       // Gradient bars / curve
       const gradient = ctx.createLinearGradient(0, 0, width, 0);
-      gradient.addColorStop(0, '#10b981');
-      gradient.addColorStop(0.5, '#f59e0b');
-      gradient.addColorStop(1, '#ef4444');
+      gradient.addColorStop(0, '#52B788');
+      gradient.addColorStop(0.5, '#D6AA55');
+      gradient.addColorStop(1, '#A94438');
 
       ctx.fillStyle = gradient;
 
@@ -135,7 +135,7 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
       peaks.forEach((peak, idx) => {
         if (peak.frequency <= maxFreq) {
           const px = (peak.frequency / maxFreq) * width;
-          ctx.fillStyle = '#fef08a';
+          ctx.fillStyle = '#FAF7F0';
           ctx.font = 'bold 10px JetBrains Mono, monospace';
           ctx.fillText(`f${idx + 1}:${peak.frequency}Hz`, px - 15, 20 + idx * 12);
         }
@@ -152,12 +152,12 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
   }, [isPlaying, staticFrequencies, staticMagnitudes, peaks, maxFreq]);
 
   function drawGrid(ctx: CanvasRenderingContext2D, width: number, h: number, maxF: number) {
-    ctx.strokeStyle = '#1e293b';
+    ctx.strokeStyle = '#273C35';
     ctx.lineWidth = 1;
 
     // Freq markers: 250, 500, 750, 1000, 1500, 2000
     const markers = [250, 500, 1000, 1500, 2000].filter((f) => f <= maxF);
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = '#8AA39B';
     ctx.font = '10px JetBrains Mono, monospace';
 
     markers.forEach((f) => {
@@ -181,12 +181,12 @@ export const SpectrumCanvas: React.FC<SpectrumCanvasProps> = ({
   }
 
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <div className="flex items-center justify-between text-xs text-stone-500 font-mono">
-        <span>{label}</span>
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex items-center justify-between text-xs text-[#556D65] font-mono">
+        <span className="font-semibold text-[#20332D]">{label}</span>
         <span>0 – {maxFreq} Hz (Hann Window)</span>
       </div>
-      <div className="relative rounded border border-stone-300 overflow-hidden bg-slate-950 shadow-inner">
+      <div className="relative rounded-xl border border-[#E8E2D5] overflow-hidden bg-[#172722] shadow-inner">
         <canvas
           ref={canvasRef}
           width={640}

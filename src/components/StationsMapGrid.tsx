@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Mountain, ArrowRight, CheckCircle2, Compass, Sparkles, Filter } from 'lucide-react';
+import { Mountain, ArrowRight, CheckCircle2, Compass, Filter, Sparkles } from 'lucide-react';
 import { STATIONS_DATA } from '../data/stationsData';
 import { STEMDomain } from '../types';
 import { getCompletedStations } from '../utils/storage';
+import { MuongPatternBorder } from './MuongPatternBorder';
 
 interface StationsMapGridProps {
   onSelectStation: (id: number) => void;
@@ -36,61 +37,81 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
   );
 
   return (
-    <div className="space-y-6">
-      {/* Featured Banner: Tam Đảo Climate Lab */}
+    <div className="space-y-8">
+      {/* Featured Banner: Tam Đảo Climate Lab (Special Interconnected Lab) */}
       <div
         onClick={onSelectTamDaoLab}
-        className={`relative overflow-hidden rounded-lg p-5 sm:p-6 cursor-pointer transition-all border shadow-xs ${
+        className={`relative overflow-hidden rounded-2xl p-6 sm:p-8 cursor-pointer transition-all border shadow-xs group ${
           isTamDaoActive
-            ? 'bg-gradient-to-r from-emerald-900 to-stone-900 text-white border-emerald-500 ring-2 ring-emerald-500/50'
-            : 'bg-gradient-to-r from-stone-900 via-emerald-950 to-stone-900 text-white border-emerald-900/60 hover:border-emerald-600'
+            ? 'bg-[#174C3C] text-white border-[#D6AA55] ring-2 ring-[#D6AA55]/50'
+            : 'bg-gradient-to-br from-[#174C3C] via-[#1E4337] to-[#11382C] text-white border-[#174C3C]/80 hover:border-[#D6AA55] hover:shadow-md'
         }`}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectTamDaoLab(); }}
+        aria-label="Mở chuyên đề Tam Đảo Climate Lab"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1.5 max-w-2xl">
-            <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
-              <span className="font-bold tracking-wider uppercase bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
-                CHUYÊN ĐỀ ĐẶC BIỆT
-              </span>
-              <span>·</span>
-              <span>LIÊN KẾT TRẠM 03, 10 & 16</span>
+        {/* Subtle decorative Muong geometric corner accents */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#D6AA55]/10 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2.5 max-w-2xl">
+            {/* Unboxed inline metadata */}
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#D6AA55]">
+              <span className="uppercase tracking-wider">Chuyên đề đặc biệt</span>
+              <span aria-hidden="true">·</span>
+              <span className="text-[#FAF7F0]/80">Liên kết Trạm 03 · Trạm 10 · Trạm 16</span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              <Mountain className="w-6 h-6 text-emerald-400 shrink-0" />
-              TAM ĐẢO CLIMATE LAB – PHÒNG THÍ NGHIỆM KHÍ HẬU VÙNG NÚI
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5 leading-snug">
+              <div className="w-9 h-9 rounded-xl bg-[#D6AA55]/20 border border-[#D6AA55]/40 flex items-center justify-center shrink-0">
+                <Mountain className="w-5 h-5 text-[#D6AA55]" />
+              </div>
+              TAM ĐẢO CLIMATE LAB
             </h2>
 
-            <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
-              Khám phá quy luật suy giảm nhiệt độ theo độ cao, sườn đón gió vs khuất gió (Hiệu ứng Phơn), mưa địa hình và bài toán kiến trúc nhà thích ứng trước thiên tai miền núi.
+            <p className="text-sm sm:text-base text-[#FAF7F0]/85 leading-relaxed">
+              Mô phỏng vi khí hậu vùng núi: Quy luật nhiệt độ theo độ cao, sườn đón gió và gió Phơn khô nóng, mưa địa hình và kiến trúc nhà sàn thích ứng thiên tai.
             </p>
           </div>
 
           <div className="shrink-0 flex items-center">
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded transition-colors shadow-xs">
-              Mở chuyên đề Tam Đảo <ArrowRight className="w-4 h-4" />
+            <span className="min-h-[44px] px-5 py-2.5 bg-[#FAF7F0] text-[#174C3C] text-xs font-bold rounded-xl flex items-center gap-2 group-hover:bg-[#D6AA55] group-hover:text-[#20332D] transition-colors shadow-xs">
+              Mở chuyên đề nghiên cứu <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
           </div>
+        </div>
+
+        {/* Subtle decorative bottom border */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <MuongPatternBorder variant="subtle" height={4} />
         </div>
       </div>
 
       {/* Domain Filters (Segmented Filter Bar) */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5 text-xs text-stone-500">
-          <Filter className="w-3.5 h-3.5" />
-          <span className="font-medium">Lọc theo lĩnh vực STEM:</span>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#20332D] uppercase tracking-wider">
+            <Filter className="w-3.5 h-3.5 text-[#174C3C]" />
+            <span>Phân loại trạm theo lĩnh vực STEM:</span>
+          </div>
+
+          <div className="text-xs text-[#556D65]">
+            Hiển thị <strong>{filteredStations.length}</strong> / 16 trạm
+          </div>
         </div>
 
-        <div className="flex items-center overflow-x-auto gap-1 bg-stone-100 p-1 rounded-md border border-stone-200">
+        {/* Filter buttons */}
+        <div className="flex items-center overflow-x-auto gap-1.5 p-1.5 bg-white rounded-xl border border-[#E8E2D5] shadow-2xs">
           {domainTabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setSelectedDomain(tab.id)}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors whitespace-nowrap ${
+              className={`min-h-[40px] px-3.5 py-2 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
                 selectedDomain === tab.id
-                  ? 'bg-white text-stone-900 shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
+                  ? 'bg-[#174C3C] text-white shadow-xs'
+                  : 'text-[#556D65] hover:text-[#20332D] hover:bg-[#FAF7F0]'
               }`}
             >
               {tab.label}
@@ -100,7 +121,7 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
       </div>
 
       {/* Stations Grid (16 Interactive Stations) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {filteredStations.map((station) => {
           const isCompleted = completedStations.includes(station.id);
           const isSelected = activeStationId === station.id && !isTamDaoActive;
@@ -109,51 +130,59 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
             <div
               key={station.id}
               onClick={() => onSelectStation(station.id)}
-              className={`flex flex-col justify-between p-4 rounded-lg border transition-all cursor-pointer bg-white ${
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectStation(station.id); }}
+              className={`flex flex-col justify-between p-5 rounded-2xl border transition-all cursor-pointer bg-white group ${
                 isSelected
-                  ? 'border-emerald-700 ring-2 ring-emerald-700/20 shadow-md'
-                  : 'border-stone-200 hover:border-emerald-600 hover:shadow-xs'
+                  ? 'border-[#174C3C] ring-2 ring-[#174C3C]/20 shadow-md'
+                  : 'border-[#E8E2D5] hover:border-[#174C3C] hover:shadow-sm'
               }`}
             >
-              <div className="space-y-2">
-                {/* Typographic Metadata (Zero-pill discipline) */}
-                <div className="flex items-center justify-between text-xs text-stone-500">
+              <div className="space-y-2.5">
+                {/* Typographic Metadata (Clean, zero-pill discipline) */}
+                <div className="flex items-center justify-between text-xs text-[#556D65] border-b border-[#FAF7F0] pb-2">
                   <div className="flex items-center gap-1.5 font-mono">
-                    <span className="font-bold text-emerald-800">TRẠM {station.numberStr}</span>
-                    <span aria-hidden="true">·</span>
-                    <span className="text-[11px] text-stone-600 truncate max-w-[120px]">
+                    <span className="font-bold text-[#174C3C]">TRẠM {station.numberStr}</span>
+                    <span aria-hidden="true" className="text-[#D6AA55]">·</span>
+                    <span className="text-[11px] font-sans font-medium text-[#556D65] truncate max-w-[130px]">
                       {station.stemDomainLabel}
                     </span>
                   </div>
+
                   {isCompleted && (
-                    <span className="text-emerald-700 font-medium text-[11px] flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Đã đo
+                    <span className="text-[#174C3C] font-semibold text-[11px] flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#174C3C]" />
+                      Đã ghi
                     </span>
                   )}
                 </div>
 
                 {/* Title */}
-                <h3 className="font-bold text-stone-900 text-sm leading-snug tracking-tight">
+                <h3 className="font-bold text-[#20332D] text-base leading-snug group-hover:text-[#174C3C] transition-colors">
                   {station.title}
                 </h3>
 
-                <p className="text-xs text-stone-600 line-clamp-2">
+                {/* Subtitle */}
+                <p className="text-xs text-[#556D65] leading-relaxed line-clamp-2">
                   {station.subtitle}
                 </p>
 
                 {/* Key formula preview */}
                 {station.keyFormula && (
-                  <div className="font-mono text-[11px] bg-stone-50 p-1.5 rounded border border-stone-100 text-stone-600 truncate">
+                  <div className="font-mono text-[11px] bg-[#FAF7F0] px-2.5 py-1.5 rounded-lg border border-[#E8E2D5] text-[#20332D] truncate">
                     {station.keyFormula}
                   </div>
                 )}
               </div>
 
-              {/* Card Footer: Heritage origin */}
-              <div className="pt-3 mt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                <span className="truncate max-w-[170px]">{station.culturalHeritage}</span>
-                <span className="text-emerald-800 font-semibold group-hover:translate-x-0.5 transition-transform">
-                  Vào trạm →
+              {/* Card Footer: Heritage context & CTA */}
+              <div className="pt-3.5 mt-3.5 border-t border-[#E8E2D5] flex items-center justify-between text-xs">
+                <span className="truncate max-w-[170px] text-[11px] text-[#556D65]" title={station.culturalHeritage}>
+                  {station.culturalHeritage}
+                </span>
+                <span className="font-bold text-xs text-[#174C3C] flex items-center gap-1 group-hover:text-[#A94438] transition-colors">
+                  Vào trạm <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
             </div>

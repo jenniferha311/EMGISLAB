@@ -1,1 +1,100 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --emgis-bg: #FAF7F0;
+    --emgis-primary: #174C3C;
+    --emgis-primary-hover: #11382C;
+    --emgis-primary-light: #EBF2EE;
+    --emgis-accent: #A94438;
+    --emgis-accent-hover: #8D372C;
+    --emgis-accent-light: #FBF0EE;
+    --emgis-gold: #D6AA55;
+    --emgis-gold-light: #FBF6EA;
+    --emgis-text: #20332D;
+    --emgis-muted: #556D65;
+    --emgis-card: #FFFFFF;
+    --emgis-border: #E8E2D5;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    background-color: var(--emgis-bg);
+    color: var(--emgis-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    color: var(--emgis-text);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+
+  /* Mobile text legibility: minimum 16px on phones */
+  @media (max-width: 640px) {
+    p, li, input, select, textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #174C3C;
+    outline-offset: 2px;
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Custom utility classes matching the exact Muong heritage color scheme */
+.bg-emgis-bg { background-color: #FAF7F0; }
+.bg-emgis-primary { background-color: #174C3C; }
+.bg-emgis-primary-hover { background-color: #11382C; }
+.bg-emgis-primary-light { background-color: #EBF2EE; }
+.bg-emgis-accent { background-color: #A94438; }
+.bg-emgis-accent-light { background-color: #FBF0EE; }
+.bg-emgis-gold { background-color: #D6AA55; }
+.bg-emgis-gold-light { background-color: #FBF6EA; }
+.bg-emgis-card { background-color: #FFFFFF; }
+
+.text-emgis-text { color: #20332D; }
+.text-emgis-primary { color: #174C3C; }
+.text-emgis-accent { color: #A94438; }
+.text-emgis-gold { color: #D6AA55; }
+.text-emgis-muted { color: #556D65; }
+
+.border-emgis-border { border-color: #E8E2D5; }
+.border-emgis-primary { border-color: #174C3C; }
+.border-emgis-accent { border-color: #A94438; }
+.border-emgis-gold { border-color: #D6AA55; }
+
+/* Subtle textured border */
+.border-muong-dash {
+  border-image: repeating-linear-gradient(45deg, #174C3C, #174C3C 8px, #D6AA55 8px, #D6AA55 16px, #A94438 16px, #A94438 24px) 2;
+}
+
+/* Print styles for research report */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header, footer, nav, button {
+    display: none !important;
+  }
+}

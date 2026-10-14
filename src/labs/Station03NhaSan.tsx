@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Wind, Sun, Home, Thermometer, Droplets, CheckCircle2, FileText, Download } from 'lucide-react';
+import { Wind, Sun, Home, Thermometer, Droplets, CheckCircle2, FileText, Download, BookOpen, HelpCircle, Sliders, Award } from 'lucide-react';
 import { STATIONS_DATA } from '../data/stationsData';
 import { saveResearchLog, getCurrentStudent, exportToCSV } from '../utils/storage';
+import { MuongPatternBorder } from '../components/MuongPatternBorder';
 
 export const Station03NhaSan: React.FC = () => {
   const station = STATIONS_DATA[2];
@@ -41,11 +42,8 @@ export const Station03NhaSan: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   // Model physical calculations (Explicit assumptions)
-  // Thermal resistance R of roof: Palm thatch (R ≈ 1.8 m²K/W) vs Tin (R ≈ 0.2 m²K/W)
   const rValue = roofMaterial === 'co_gianh' ? 1.8 : 0.25;
-  // Natural indoor airflow velocity estimate
   const indoorAirSpeed = Math.round((outdoorWind * (ventOpening / 100) * 0.55 + (floorHeight / 3) * 0.2) * 10) / 10;
-  // Indoor temperature reduction: cooling effect from underfloor draft + roof insulation
   const coolingDelta = (roofMaterial === 'co_gianh' ? 3.8 : 0.8) + (floorHeight - 1.2) * 0.9 + (ventOpening / 100) * 1.5;
   const estimatedIndoorTemp = Math.round((outdoorTemp - coolingDelta) * 10) / 10;
 
@@ -70,7 +68,7 @@ export const Station03NhaSan: React.FC = () => {
       studentCode: student,
       stationId: 3,
       stationTitle: station.title,
-      hypothesis: 'Khảo sát hiệu ứng đối lưu vi khí hậu và lớp đệm nhiệt mái lá cọ trong kiến trúc nhà sàn.',
+      hypothesis: 'Khảo sát hiệu ứng đối lưu vi khí hậu và lớp đệm nhiệt mái lá cọ trong kiến trúc nhà sàn Mường.',
       changedVariables: {
         floorHeight_m: floorHeight,
         roofPitch_deg: roofPitch,
@@ -95,20 +93,37 @@ export const Station03NhaSan: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border border-stone-200 rounded-lg p-5 shadow-xs">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-mono text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-            TRẠM {station.numberStr}
-          </span>
-          <span className="text-xs text-stone-500 font-medium">·</span>
-          <span className="text-xs text-stone-600 font-medium">{station.stemDomainLabel}</span>
+      <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0">
+          <MuongPatternBorder variant="subtle" height={5} />
         </div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">{station.title}</h1>
-        <p className="text-sm text-stone-600 mt-1">{station.subtitle}</p>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2 pt-1">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
+              TRẠM {station.numberStr}
+            </span>
+            <span className="text-xs text-[#D6AA55]">·</span>
+            <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
+          </div>
+          <span className="text-xs text-[#556D65] font-medium">{station.locationContext}</span>
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#174C3C] tracking-tight">{station.title}</h1>
+        <p className="text-sm sm:text-base text-[#556D65] mt-1.5 leading-relaxed">{station.subtitle}</p>
+
+        <div className="mt-4 pt-3.5 border-t border-[#E8E2D5] flex flex-wrap items-center justify-between gap-2 text-xs text-[#556D65]">
+          <div>
+            <strong className="text-[#20332D]">Di sản kiến trúc:</strong> {station.culturalHeritage}
+          </div>
+          <div className="font-mono text-[#174C3C] font-semibold">
+            {station.keyFormula}
+          </div>
+        </div>
       </div>
 
       {/* 7-Step Navigation */}
-      <div className="flex items-center overflow-x-auto pb-1 gap-1 border-b border-stone-200">
+      <div className="flex items-center overflow-x-auto pb-1 gap-1.5 border-b border-[#E8E2D5]">
         {[
           { id: 1, label: '1. Khám phá bối cảnh' },
           { id: 2, label: '2. Câu hỏi STEM' },
@@ -122,10 +137,10 @@ export const Station03NhaSan: React.FC = () => {
             key={tab.id}
             type="button"
             onClick={() => setActiveStep(tab.id)}
-            className={`px-3 py-2 text-xs font-medium whitespace-nowrap rounded-t border-b-2 transition-colors ${
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-bold whitespace-nowrap rounded-t-xl border-b-2 transition-all ${
               activeStep === tab.id
-                ? 'border-emerald-700 text-emerald-900 bg-white font-semibold'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
+                ? 'border-[#174C3C] text-[#174C3C] bg-white shadow-2xs'
+                : 'border-transparent text-[#556D65] hover:text-[#20332D] hover:bg-white/60'
             }`}
           >
             {tab.label}
@@ -134,8 +149,8 @@ export const Station03NhaSan: React.FC = () => {
       </div>
 
       {saveSuccess && (
-        <div className="flex items-center gap-2 p-3 text-xs bg-emerald-50 text-emerald-900 border border-emerald-300 rounded">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="flex items-center gap-2.5 p-3.5 text-xs bg-[#EBF2EE] text-[#174C3C] border border-[#174C3C]/30 rounded-2xl shadow-2xs font-medium">
+          <CheckCircle2 className="w-4 h-4 text-[#174C3C] shrink-0" />
           <span>{saveSuccess}</span>
         </div>
       )}
@@ -143,23 +158,23 @@ export const Station03NhaSan: React.FC = () => {
       {/* STEP 4: 2D Interactive Architecture & Ventilation Model */}
       {activeStep === 4 && (
         <div className="space-y-6">
-          <div className="p-3 bg-amber-50 border border-amber-300 rounded text-xs text-amber-900 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-mono">
+          <div className="p-4 bg-[#FBF6EA] border border-[#D6AA55]/50 rounded-2xl text-xs sm:text-sm text-[#20332D] flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <span className="font-bold bg-[#D6AA55] text-[#20332D] px-2 py-0.5 rounded-lg font-mono text-[11px]">
                 MÔ PHỎNG VẬT LÝ GIẢ ĐỊNH
               </span>
               <span>Mô hình nhiệt động học 1D và thông gió tự nhiên; có ô nhập số liệu thực đo ngoài đời.</span>
             </div>
-            <span className="font-mono text-stone-500 hidden sm:inline">Stack Effect & R-Value</span>
+            <span className="font-mono text-[#556D65] hidden sm:inline">Stack Effect & R-Value</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left: 2D Architectural Cross-section Graphic (6 cols) */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-stone-900 p-4 rounded-lg border border-stone-800 shadow-md">
-                <div className="flex items-center justify-between text-xs text-stone-400 mb-2 font-mono">
+              <div className="bg-[#20332D] p-5 rounded-2xl border border-[#174C3C] shadow-sm text-white">
+                <div className="flex items-center justify-between text-xs text-[#E8E2D5] mb-2 font-mono">
                   <span>MẶT CẮT 2D NHÀ SÀN & DÒNG GIÓ LÙA</span>
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-[#D6AA55] font-bold">
                     Vận tốc gió trong nhà: ~{indoorAirSpeed} m/s
                   </span>
                 </div>
@@ -167,32 +182,31 @@ export const Station03NhaSan: React.FC = () => {
                 <div className="relative w-full h-64 sm:h-72 flex items-center justify-center">
                   <svg viewBox="0 0 400 300" className="w-full h-full">
                     <defs>
-                      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.2" />
-                        <stop offset="100%" stopColor="#0284c7" stopOpacity="0.05" />
+                      <linearGradient id="skyGradNhaSan" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#174C3C" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#20332D" stopOpacity="0.1" />
                       </linearGradient>
-                      <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="groundGradNhaSan" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#3f2e1d" />
                         <stop offset="100%" stopColor="#1e140d" />
                       </linearGradient>
-                      <marker id="windArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                      <marker id="windArrowNhaSan" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#D6AA55" />
                       </marker>
                     </defs>
 
                     {/* Sky & Ground */}
-                    <rect x="0" y="0" width="400" height="250" fill="url(#skyGrad)" />
-                    <rect x="0" y="250" width="400" height="50" fill="url(#groundGrad)" />
+                    <rect x="0" y="0" width="400" height="250" fill="url(#skyGradNhaSan)" />
+                    <rect x="0" y="250" width="400" height="50" fill="url(#groundGradNhaSan)" />
 
-                    {/* Ground line grass marks */}
-                    <line x1="0" y1="250" x2="400" y2="250" stroke="#16a34a" strokeWidth="2" />
+                    {/* Ground line */}
+                    <line x1="0" y1="250" x2="400" y2="250" stroke="#174C3C" strokeWidth="2.5" />
 
                     {/* Sun radiation */}
-                    <circle cx="50" cy="50" r="22" fill="#fbbf24" opacity="0.8" />
-                    <circle cx="50" cy="50" r="30" fill="#f59e0b" opacity="0.3" className="animate-pulse" />
+                    <circle cx="50" cy="50" r="22" fill="#D6AA55" opacity="0.85" />
+                    <circle cx="50" cy="50" r="30" fill="#D6AA55" opacity="0.25" className="animate-pulse" />
 
-                    {/* Stilt Pillars (Cột nhà sàn) based on floorHeight */}
-                    {/* SVG baseline ground at Y=250. Floor height in SVG: 250 - floorHeight*40 */}
+                    {/* Stilt Pillars based on floorHeight */}
                     {(() => {
                       const floorY = 250 - floorHeight * 45;
                       const roofPeakY = floorY - 50 - (roofPitch / 45) * 45;
@@ -208,8 +222,8 @@ export const Station03NhaSan: React.FC = () => {
                               y={floorY}
                               width="8"
                               height={250 - floorY}
-                              fill="#78350f"
-                              stroke="#451a03"
+                              fill="#8A6627"
+                              stroke="#4A3411"
                               strokeWidth="1"
                             />
                           ))}
@@ -220,8 +234,8 @@ export const Station03NhaSan: React.FC = () => {
                             y={floorY - 6}
                             width="180"
                             height="8"
-                            fill="#92400e"
-                            stroke="#451a03"
+                            fill="#9C772F"
+                            stroke="#4A3411"
                             strokeWidth="1"
                           />
 
@@ -231,8 +245,8 @@ export const Station03NhaSan: React.FC = () => {
                             y={roofEavesY}
                             width="160"
                             height={floorY - 6 - roofEavesY}
-                            fill="#b45309"
-                            opacity="0.3"
+                            fill="#D6AA55"
+                            opacity="0.2"
                           />
 
                           {/* Windows with ventOpening % */}
@@ -241,67 +255,55 @@ export const Station03NhaSan: React.FC = () => {
                             y={roofEavesY + 8}
                             width={30 * (ventOpening / 100)}
                             height="24"
-                            fill="#0284c7"
-                            opacity="0.6"
+                            fill="#FAF7F0"
+                            opacity="0.8"
                           />
                           <rect
                             x="230"
                             y={roofEavesY + 8}
                             width={30 * (ventOpening / 100)}
                             height="24"
-                            fill="#0284c7"
-                            opacity="0.6"
+                            fill="#FAF7F0"
+                            opacity="0.8"
                           />
 
                           {/* Roof Triangle (Palm Thatch vs Tin) */}
                           <polygon
-                            points={`200,${roofPeakY} 100,${roofEavesY} 300,${roofEavesY}`}
-                            fill={roofMaterial === 'co_gianh' ? '#ca8a04' : '#94a3b8'}
-                            stroke={roofMaterial === 'co_gianh' ? '#854d0e' : '#475569'}
-                            strokeWidth="3"
-                          />
-
-                          {/* Thatch texture lines if palm */}
-                          {roofMaterial === 'co_gianh' && (
-                            <g stroke="#713f12" strokeWidth="1" strokeDasharray="3 3">
-                              <line x1="200" y1={roofPeakY} x2="115" y2={roofEavesY} />
-                              <line x1="200" y1={roofPeakY} x2="285" y2={roofEavesY} />
-                              <line x1="160" y1={(roofPeakY + roofEavesY) / 2} x2="240" y2={(roofPeakY + roofEavesY) / 2} />
-                            </g>
-                          )}
-
-                          {/* Underfloor Wind Flow Arrows */}
-                          <path
-                            d={`M 30,${(floorY + 250) / 2} Q 150,${(floorY + 250) / 2} 370,${(floorY + 250) / 2}`}
-                            fill="none"
-                            stroke="#38bdf8"
-                            strokeWidth="2.5"
-                            strokeDasharray="6 4"
-                            markerEnd="url(#windArrow)"
-                          />
-
-                          {/* Indoor Cross-Ventilation Wind Arrow */}
-                          <path
-                            d={`M 50,${floorY - 18} Q 200,${floorY - 26} 360,${roofPeakY + 25}`}
-                            fill="none"
-                            stroke="#67e8f9"
+                            points={`95,${roofEavesY} 200,${roofPeakY} 305,${roofEavesY}`}
+                            fill={roofMaterial === 'co_gianh' ? '#A94438' : '#8AA39B'}
+                            stroke="#D6AA55"
                             strokeWidth="2"
-                            strokeDasharray="4 4"
-                            markerEnd="url(#windArrow)"
                           />
 
-                          {/* Indoor Temperature Readout Label */}
-                          <rect x="160" y={floorY - 32} width="80" height="20" fill="#0f172a" rx="4" />
-                          <text
-                            x="200"
-                            y={floorY - 18}
-                            textAnchor="middle"
-                            fill="#34d399"
-                            fontSize="11"
-                            fontWeight="bold"
-                            fontFamily="monospace"
-                          >
-                            {estimatedIndoorTemp}°C
+                          {/* Underfloor Air Draft Arrows (Gió lùa gầm sàn) */}
+                          <path
+                            d={`M 30,${250 - (floorHeight * 45) / 2} Q 110,${250 - (floorHeight * 45) / 2} 370,${250 - (floorHeight * 45) / 2}`}
+                            fill="none"
+                            stroke="#D6AA55"
+                            strokeWidth="2"
+                            strokeDasharray="6 4"
+                            markerEnd="url(#windArrowNhaSan)"
+                          />
+
+                          {/* Roof Eaves Air Exhaust Draft (Gió thoát mái) */}
+                          <path
+                            d={`M 150,${roofEavesY + 20} Q 200,${roofPeakY + 15} 250,${roofPeakY - 10}`}
+                            fill="none"
+                            stroke="#FAF7F0"
+                            strokeWidth="1.5"
+                            strokeDasharray="4 3"
+                            opacity="0.8"
+                          />
+
+                          {/* Temperature Callouts */}
+                          <text x="25" y="105" fill="#FAF7F0" fontSize="11" fontWeight="bold">
+                            T ngoài: {outdoorTemp}°C
+                          </text>
+                          <text x="145" y={floorY - 15} fill="#D6AA55" fontSize="12" fontWeight="bold">
+                            T trong: {estimatedIndoorTemp}°C
+                          </text>
+                          <text x="145" y={floorY - 2} fill="#FAF7F0" fontSize="9">
+                            ΔT: -{coolingDelta.toFixed(1)}°C
                           </text>
                         </g>
                       );
@@ -309,56 +311,30 @@ export const Station03NhaSan: React.FC = () => {
                   </svg>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-stone-400 pt-2 border-t border-stone-800">
-                  <span>Gầm sàn cao {floorHeight}m giúp gió lùa làm mát liên tục</span>
-                  <span>Mái dốc {roofPitch}° hỗ trợ thoát khí nóng</span>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#FAF7F0]/90 border-t border-[#174C3C] pt-2.5">
+                  <div>
+                    Độ cao gầm sàn: <strong>{floorHeight}m</strong>
+                  </div>
+                  <div>
+                    Vật liệu mái: <strong>{roofMaterial === 'co_gianh' ? 'Lá cọ (R ≈ 1.8)' : 'Tôn (R ≈ 0.25)'}</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right: Parameter Controls & Metrics (6 cols) */}
+            {/* Right: Architectural Parameter Controls (6 cols) */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-white p-4 rounded-lg border border-stone-200 space-y-4">
-                <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
-                  Điều chỉnh thông số kiến trúc & môi trường
+              <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E8E2D5] shadow-xs space-y-4">
+                <h3 className="text-xs font-bold text-[#174C3C] uppercase tracking-wider flex items-center gap-1.5 border-b border-[#E8E2D5] pb-2.5">
+                  <Sliders className="w-4 h-4 text-[#D6AA55]" />
+                  Điều chỉnh thông số vi khí hậu kiến trúc
                 </h3>
 
-                {/* Material Choice */}
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-stone-700">Vật liệu lợp mái:</label>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setRoofMaterial('co_gianh')}
-                      className={`p-2 rounded border text-left transition-colors ${
-                        roofMaterial === 'co_gianh'
-                          ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold'
-                          : 'border-stone-200 hover:bg-stone-50 text-stone-700'
-                      }`}
-                    >
-                      <div>Lá cọ / Gianh dày</div>
-                      <div className="text-[11px] text-stone-500 font-normal">Cách nhiệt cao (R ≈ 1.8)</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRoofMaterial('ton')}
-                      className={`p-2 rounded border text-left transition-colors ${
-                        roofMaterial === 'ton'
-                          ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold'
-                          : 'border-stone-200 hover:bg-stone-50 text-stone-700'
-                      }`}
-                    >
-                      <div>Tôn kim loại</div>
-                      <div className="text-[11px] text-stone-500 font-normal">Hấp thụ bức xạ lớn (R ≈ 0.25)</div>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Floor Height */}
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-stone-700">Chiều cao gầm sàn h (m):</span>
-                    <span className="font-mono text-emerald-800 font-bold">{floorHeight.toFixed(1)} m</span>
+                {/* Floor Height Slider */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-bold text-[#20332D]">Chiều cao gầm sàn (H_sàn):</span>
+                    <span className="font-mono text-[#174C3C] font-bold">{floorHeight} m</span>
                   </div>
                   <input
                     type="range"
@@ -367,37 +343,42 @@ export const Station03NhaSan: React.FC = () => {
                     step="0.1"
                     value={floorHeight}
                     onChange={(e) => setFloorHeight(parseFloat(e.target.value))}
-                    className="w-full accent-emerald-700"
+                    className="w-full accent-[#174C3C]"
                   />
-                  <div className="flex justify-between text-[11px] text-stone-400">
+                  <div className="flex justify-between text-[11px] text-[#556D65]">
                     <span>1.2m (thấp)</span>
-                    <span>2.0m (chuẩn Mường cổ)</span>
+                    <span>1.8m - 2.2m (chuẩn Mường)</span>
                     <span>2.8m (rất thoáng)</span>
                   </div>
                 </div>
 
-                {/* Roof Pitch */}
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-stone-700">Góc nghiêng mái θ (°):</span>
-                    <span className="font-mono text-emerald-800 font-bold">{roofPitch}°</span>
+                {/* Roof Pitch Slider */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-bold text-[#20332D]">Độ dốc mái (Góc nghiêng θ):</span>
+                    <span className="font-mono text-[#174C3C] font-bold">{roofPitch}°</span>
                   </div>
                   <input
                     type="range"
                     min="25"
                     max="60"
-                    step="1"
+                    step="5"
                     value={roofPitch}
                     onChange={(e) => setRoofPitch(parseInt(e.target.value))}
-                    className="w-full accent-emerald-700"
+                    className="w-full accent-[#174C3C]"
                   />
+                  <div className="flex justify-between text-[11px] text-[#556D65]">
+                    <span>25° (mái lài)</span>
+                    <span>45° (mái dốc cọ)</span>
+                    <span>60° (dốc đứng)</span>
+                  </div>
                 </div>
 
-                {/* Vent Openings */}
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-stone-700">Độ mở cửa thông gió (%):</span>
-                    <span className="font-mono text-emerald-800 font-bold">{ventOpening}%</span>
+                {/* Vent opening */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-bold text-[#20332D]">Độ mở cửa sổ & giàn thông gió:</span>
+                    <span className="font-mono text-[#174C3C] font-bold">{ventOpening}%</span>
                   </div>
                   <input
                     type="range"
@@ -406,68 +387,48 @@ export const Station03NhaSan: React.FC = () => {
                     step="5"
                     value={ventOpening}
                     onChange={(e) => setVentOpening(parseInt(e.target.value))}
-                    className="w-full accent-emerald-700"
+                    className="w-full accent-[#174C3C]"
                   />
                 </div>
 
-                {/* Outdoor Climate inputs */}
-                <div className="pt-2 border-t border-stone-100 grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="text-stone-600">Nhiệt độ ngoài trời:</label>
-                    <div className="flex items-center gap-1 mt-1">
-                      <input
-                        type="number"
-                        value={outdoorTemp}
-                        onChange={(e) => setOutdoorTemp(parseFloat(e.target.value) || 20)}
-                        className="w-full p-1.5 rounded border border-stone-300 font-mono"
-                      />
-                      <span>°C</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-stone-600">Vận tốc gió ngoài:</label>
-                    <div className="flex items-center gap-1 mt-1">
-                      <input
-                        type="number"
-                        value={outdoorWind}
-                        onChange={(e) => setOutdoorWind(parseFloat(e.target.value) || 0)}
-                        className="w-full p-1.5 rounded border border-stone-300 font-mono"
-                      />
-                      <span>m/s</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Output Comparison Box */}
-                <div className="p-3 bg-stone-50 rounded border border-stone-200 grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <div className="text-stone-500">Nhiệt độ trong nhà tính toán:</div>
-                    <div className="text-xl font-bold font-mono text-emerald-800">
-                      {estimatedIndoorTemp}°C
-                    </div>
-                    <div className="text-[11px] text-stone-500">
-                      Chênh lệch: -{(outdoorTemp - estimatedIndoorTemp).toFixed(1)}°C
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-stone-500">Lưu lượng gió thông phòng:</div>
-                    <div className="text-xl font-bold font-mono text-blue-800">
-                      ~{indoorAirSpeed} m/s
-                    </div>
-                    <div className="text-[11px] text-stone-500">
-                      {indoorAirSpeed > 0.4 ? 'Gió lưu thông dễ chịu' : 'Gió yếu'}
-                    </div>
+                {/* Roof Material Switcher */}
+                <div className="space-y-1.5">
+                  <span className="text-xs font-bold text-[#20332D] block">Vật liệu lợp mái:</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRoofMaterial('co_gianh')}
+                      className={`min-h-[44px] p-2 rounded-xl text-xs font-bold border transition-all ${
+                        roofMaterial === 'co_gianh'
+                          ? 'bg-[#EBF2EE] text-[#174C3C] border-[#174C3C]'
+                          : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
+                      }`}
+                    >
+                      Lá cọ dày (Truyền thống, R=1.8)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRoofMaterial('ton')}
+                      className={`min-h-[44px] p-2 rounded-xl text-xs font-bold border transition-all ${
+                        roofMaterial === 'ton'
+                          ? 'bg-[#EBF2EE] text-[#174C3C] border-[#174C3C]'
+                          : 'bg-white text-[#20332D] border-[#E8E2D5] hover:bg-[#FAF7F0]'
+                      }`}
+                    >
+                      Mái tôn (Hiện đại, R=0.25)
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-1">
+                {/* Save button */}
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={handleSaveToJournal}
-                    className="px-4 py-2 bg-emerald-800 text-white rounded text-xs font-medium hover:bg-emerald-900 flex items-center gap-1.5"
+                    className="w-full min-h-[44px] bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all flex items-center justify-center gap-2 shadow-xs active:scale-98"
                   >
-                    <FileText className="w-3.5 h-3.5" />
-                    Lưu kết quả mô phỏng
+                    <FileText className="w-4 h-4 text-[#D6AA55]" />
+                    Lưu kết quả mô phỏng vào Nhật ký
                   </button>
                 </div>
               </div>
@@ -476,22 +437,22 @@ export const Station03NhaSan: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 5: Real Field Measurements Logger */}
+      {/* STEP 5: Real Field Measurements Table */}
       {activeStep === 5 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E8E2D5] pb-3">
             <div>
-              <h2 className="text-base font-bold text-stone-900">
-                Bảng số liệu đo thực tế vi khí hậu (Học sinh thu thập ngoài thực địa)
-              </h2>
-              <p className="text-xs text-stone-500">
-                Gắn nhãn <strong>ĐO THỰC TẾ</strong> – Học sinh nhập số liệu đo bằng nhiệt ẩm kế cầm tay tại địa phương.
-              </p>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+                <Thermometer className="w-4 h-4 text-[#A94438]" />
+                Số liệu thực đo ngoài đời thực
+              </div>
+              <h2 className="text-xl font-bold text-[#174C3C] mt-0.5">Bảng nhật ký đo đạc vi khí hậu thực địa</h2>
             </div>
+
             <button
               type="button"
               onClick={() => {
-                const headers = ['ThoiGian', 'DiaDiem', 'NhietDoNgoai_C', 'NhietDoTrong_C', 'DoAm_Pct', 'Gio_ms'];
+                const headers = ['ThoiGian', 'DiaDiem', 'T_Ngoai_C', 'T_Trong_C', 'DoAm_Pct', 'Gio_ms'];
                 const rows = fieldMeasurements.map((m) => [
                   m.time,
                   m.location,
@@ -502,55 +463,55 @@ export const Station03NhaSan: React.FC = () => {
                 ]);
                 exportToCSV('tram03_nha_san_thuc_te.csv', headers, rows);
               }}
-              className="px-3 py-1.5 border border-stone-300 rounded text-xs font-medium text-stone-700 hover:bg-stone-50 flex items-center gap-1"
+              className="min-h-[44px] px-4 py-2 border border-[#E8E2D5] rounded-xl text-xs sm:text-sm font-bold text-[#20332D] hover:bg-[#FAF7F0] flex items-center gap-1.5 transition-colors shadow-2xs"
             >
-              <Download className="w-3.5 h-3.5" /> Xuất dữ liệu CSV
+              <Download className="w-4 h-4 text-[#174C3C]" /> Xuất dữ liệu CSV
             </button>
           </div>
 
           {/* Input Row */}
-          <div className="p-3 bg-stone-50 rounded border border-stone-200 grid grid-cols-2 sm:grid-cols-6 gap-2 text-xs">
+          <div className="p-4 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] grid grid-cols-2 sm:grid-cols-6 gap-3 text-xs">
             <div>
-              <label className="text-stone-600">Giờ đo:</label>
+              <label className="text-[#20332D] font-bold block mb-1">Giờ đo:</label>
               <input
                 type="text"
                 value={newLog.time}
                 onChange={(e) => setNewLog({ ...newLog, time: e.target.value })}
-                className="w-full mt-1 p-1.5 bg-white border border-stone-300 rounded font-mono"
+                className="w-full min-h-[40px] px-2.5 bg-white border border-[#E8E2D5] rounded-lg font-mono text-xs"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="text-stone-600">Địa điểm / Đặc điểm nhà:</label>
+              <label className="text-[#20332D] font-bold block mb-1">Địa điểm / Đặc điểm nhà:</label>
               <input
                 type="text"
                 value={newLog.location}
                 onChange={(e) => setNewLog({ ...newLog, location: e.target.value })}
-                className="w-full mt-1 p-1.5 bg-white border border-stone-300 rounded"
+                className="w-full min-h-[40px] px-2.5 bg-white border border-[#E8E2D5] rounded-lg text-xs"
               />
             </div>
             <div>
-              <label className="text-stone-600">T ngoài (°C):</label>
+              <label className="text-[#20332D] font-bold block mb-1">T ngoài (°C):</label>
               <input
                 type="number"
                 value={newLog.outdoorTemp}
                 onChange={(e) => setNewLog({ ...newLog, outdoorTemp: parseFloat(e.target.value) || 0 })}
-                className="w-full mt-1 p-1.5 bg-white border border-stone-300 rounded font-mono"
+                className="w-full min-h-[40px] px-2.5 bg-white border border-[#E8E2D5] rounded-lg font-mono text-xs"
               />
             </div>
             <div>
-              <label className="text-stone-600">T trong (°C):</label>
+              <label className="text-[#20332D] font-bold block mb-1">T trong (°C):</label>
               <input
                 type="number"
                 value={newLog.indoorTemp}
                 onChange={(e) => setNewLog({ ...newLog, indoorTemp: parseFloat(e.target.value) || 0 })}
-                className="w-full mt-1 p-1.5 bg-white border border-stone-300 rounded font-mono"
+                className="w-full min-h-[40px] px-2.5 bg-white border border-[#E8E2D5] rounded-lg font-mono text-xs"
               />
             </div>
             <div className="flex items-end">
               <button
                 type="button"
                 onClick={handleAddMeasurement}
-                className="w-full py-1.5 bg-emerald-800 text-white rounded font-medium hover:bg-emerald-900"
+                className="w-full min-h-[40px] bg-[#174C3C] text-white rounded-lg text-xs font-bold hover:bg-[#11382C] transition-colors"
               >
                 + Thêm mẫu
               </button>
@@ -558,29 +519,29 @@ export const Station03NhaSan: React.FC = () => {
           </div>
 
           {/* Measurements Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border border-[#E8E2D5] rounded-xl">
             <table className="w-full text-xs text-left">
-              <thead className="bg-stone-50 border-b border-stone-200 text-stone-700">
+              <thead className="bg-[#FAF7F0] border-b border-[#E8E2D5] text-[#20332D] font-bold">
                 <tr>
-                  <th className="py-2 px-3">Thời gian</th>
-                  <th className="py-2 px-3">Địa điểm khảo sát</th>
-                  <th className="py-2 px-3">T ngoài (°C)</th>
-                  <th className="py-2 px-3">T trong nhà (°C)</th>
-                  <th className="py-2 px-3">Chênh lệch ΔT</th>
-                  <th className="py-2 px-3">Độ ẩm (%)</th>
+                  <th className="py-2.5 px-3.5">Thời gian</th>
+                  <th className="py-2.5 px-3.5">Địa điểm khảo sát</th>
+                  <th className="py-2.5 px-3.5">T ngoài (°C)</th>
+                  <th className="py-2.5 px-3.5">T trong nhà (°C)</th>
+                  <th className="py-2.5 px-3.5">Chênh lệch ΔT</th>
+                  <th className="py-2.5 px-3.5">Độ ẩm (%)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100 font-mono">
+              <tbody className="divide-y divide-[#E8E2D5] font-mono">
                 {fieldMeasurements.map((m) => (
-                  <tr key={m.id} className="hover:bg-stone-50">
-                    <td className="py-2 px-3">{m.time}</td>
-                    <td className="py-2 px-3 font-sans text-stone-800">{m.location}</td>
-                    <td className="py-2 px-3 text-red-700 font-semibold">{m.outdoorTemp}°C</td>
-                    <td className="py-2 px-3 text-emerald-800 font-bold">{m.indoorTemp}°C</td>
-                    <td className="py-2 px-3 text-emerald-700 font-bold">
+                  <tr key={m.id} className="hover:bg-[#FAF7F0]/50">
+                    <td className="py-2.5 px-3.5">{m.time}</td>
+                    <td className="py-2.5 px-3.5 font-sans text-[#20332D]">{m.location}</td>
+                    <td className="py-2.5 px-3.5 text-[#A94438] font-bold">{m.outdoorTemp}°C</td>
+                    <td className="py-2.5 px-3.5 text-[#174C3C] font-bold">{m.indoorTemp}°C</td>
+                    <td className="py-2.5 px-3.5 text-[#174C3C] font-bold">
                       -{(m.outdoorTemp - m.indoorTemp).toFixed(1)}°C
                     </td>
-                    <td className="py-2 px-3 text-stone-600">{m.humidity}%</td>
+                    <td className="py-2.5 px-3.5 text-[#556D65]">{m.humidity}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -591,8 +552,21 @@ export const Station03NhaSan: React.FC = () => {
 
       {/* STEP 1, 2, 3, 6, 7 */}
       {activeStep !== 4 && activeStep !== 5 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-base font-bold text-stone-900">
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <BookOpen className="w-4 h-4 text-[#D6AA55]" />
+            {activeStep === 1
+              ? 'Bối cảnh di sản & Kiến trúc bản địa'
+              : activeStep === 2
+              ? 'Câu hỏi nghiên cứu STEM'
+              : activeStep === 3
+              ? 'Dự đoán & Giả thuyết'
+              : activeStep === 6
+              ? 'Thử thách thiết kế thích ứng'
+              : 'Phản tư & Di sản kiến trúc'}
+          </div>
+
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">
             {activeStep === 1
               ? station.steps.context.title
               : activeStep === 2
@@ -601,19 +575,38 @@ export const Station03NhaSan: React.FC = () => {
               ? station.steps.prediction.prompt
               : activeStep === 6
               ? station.steps.challenge.title
-              : 'Phản tư & Di sản kiến trúc'}
+              : 'Phản tư & Di sản kiến trúc Mường'}
           </h2>
-          <p>
+
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">
             {activeStep === 1
               ? station.steps.context.description
               : activeStep === 2
               ? station.steps.stemQuestion.contextExplanation
               : activeStep === 3
-              ? 'Hãy thử thay đổi độ dốc mái và gầm sàn trong Thí nghiệm số để kiểm chứng giả thuyết.'
+              ? 'Hãy thử thay đổi độ dốc mái và gầm sàn trong Thí nghiệm số để kiểm chứng giả thuyết về dòng khí lùa.'
               : activeStep === 6
               ? station.steps.challenge.scenario
               : station.steps.reflection.culturalConnection}
           </p>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#E8E2D5]">
+            <button
+              type="button"
+              onClick={() => setActiveStep(4)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Chuyển đến Thí nghiệm số
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveToJournal}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] flex items-center gap-2 shadow-xs active:scale-98"
+            >
+              <CheckCircle2 className="w-4 h-4 text-[#D6AA55]" />
+              Lưu vào Nhật ký nghiên cứu
+            </button>
+          </div>
         </div>
       )}
     </div>

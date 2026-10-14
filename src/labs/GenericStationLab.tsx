@@ -10,12 +10,14 @@ import {
   HelpCircle, 
   Award, 
   Activity,
-  Volume2
+  Volume2,
+  BookOpen
 } from 'lucide-react';
 import { StationMeta } from '../types';
 import { STATIONS_DATA } from '../data/stationsData';
 import { saveResearchLog, getCurrentStudent, exportToCSV } from '../utils/storage';
 import { audioEngine } from '../utils/audioEngine';
+import { MuongPatternBorder } from '../components/MuongPatternBorder';
 
 interface GenericStationLabProps {
   stationId: number;
@@ -199,29 +201,37 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white border border-stone-200 rounded-lg p-5 shadow-xs">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-mono text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-            TRẠM {station.numberStr}
-          </span>
-          <span className="text-xs text-stone-500 font-medium">·</span>
-          <span className="text-xs text-stone-600 font-medium">{station.stemDomainLabel}</span>
+      <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0">
+          <MuongPatternBorder variant="subtle" height={5} />
         </div>
-        <h1 className="text-2xl font-bold text-stone-900 tracking-tight">{station.title}</h1>
-        <p className="text-sm text-stone-600 mt-1">{station.subtitle}</p>
 
-        <div className="mt-4 pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
-          <div>
-            <strong className="text-stone-700">Di sản:</strong> {station.culturalHeritage}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2 pt-1">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
+              TRẠM {station.numberStr}
+            </span>
+            <span className="text-xs text-[#D6AA55]">·</span>
+            <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
           </div>
+          <span className="text-xs text-[#556D65] font-medium">{station.locationContext}</span>
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#174C3C] tracking-tight">{station.title}</h1>
+        <p className="text-sm sm:text-base text-[#556D65] mt-1.5 leading-relaxed">{station.subtitle}</p>
+
+        <div className="mt-4 pt-3.5 border-t border-[#E8E2D5] flex flex-wrap items-center justify-between gap-2 text-xs text-[#556D65]">
           <div>
-            <strong className="text-stone-700">Địa bàn:</strong> {station.locationContext}
+            <strong className="text-[#20332D]">Di sản văn hóa:</strong> {station.culturalHeritage}
+          </div>
+          <div className="font-mono text-[#174C3C] font-semibold">
+            {station.keyFormula}
           </div>
         </div>
       </div>
 
       {/* 7-Step Navigation */}
-      <div className="flex items-center overflow-x-auto pb-1 gap-1 border-b border-stone-200">
+      <div className="flex items-center overflow-x-auto pb-1 gap-1.5 border-b border-[#E8E2D5]">
         {[
           { id: 1, label: '1. Khám phá bối cảnh' },
           { id: 2, label: '2. Câu hỏi STEM' },
@@ -235,10 +245,10 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
             key={tab.id}
             type="button"
             onClick={() => setActiveStep(tab.id)}
-            className={`px-3 py-2 text-xs font-medium whitespace-nowrap rounded-t border-b-2 transition-colors ${
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-bold whitespace-nowrap rounded-t-xl border-b-2 transition-all ${
               activeStep === tab.id
-                ? 'border-emerald-700 text-emerald-900 bg-white font-semibold'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
+                ? 'border-[#174C3C] text-[#174C3C] bg-white shadow-2xs'
+                : 'border-transparent text-[#556D65] hover:text-[#20332D] hover:bg-white/60'
             }`}
           >
             {tab.label}
@@ -247,8 +257,8 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
       </div>
 
       {saveSuccess && (
-        <div className="flex items-center gap-2 p-3 text-xs bg-emerald-50 text-emerald-900 border border-emerald-300 rounded">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="flex items-center gap-2.5 p-3.5 text-xs bg-[#EBF2EE] text-[#174C3C] border border-[#174C3C]/30 rounded-2xl shadow-2xs font-medium">
+          <CheckCircle2 className="w-4 h-4 text-[#174C3C] shrink-0" />
           <span>{saveSuccess}</span>
         </div>
       )}
@@ -256,22 +266,22 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
       {/* STEP 4: Interactive Simulation */}
       {activeStep === 4 && (
         <div className="space-y-6">
-          <div className="p-3 bg-amber-50 border border-amber-300 rounded text-xs text-amber-900 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-bold bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-mono">
+          <div className="p-4 bg-[#FBF6EA] border border-[#D6AA55]/50 rounded-2xl text-xs sm:text-sm text-[#20332D] flex items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <span className="font-bold bg-[#D6AA55] text-[#20332D] px-2 py-0.5 rounded-lg font-mono text-[11px]">
                 MÔ PHỎNG VẬT LÝ SỐ
               </span>
               <span>Mô hình toán học tương tác dựa trên nguyên lý cơ học, nhiệt, quang hoặc hình học.</span>
             </div>
-            <span className="font-mono text-stone-500 hidden sm:inline">{station.keyFormula}</span>
+            <span className="font-mono text-[#556D65] hidden sm:inline">{station.keyFormula}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Visual Canvas / SVG Interactive Panel (7 cols) */}
-            <div className="lg:col-span-7 bg-stone-900 p-5 rounded-lg border border-stone-800 text-white space-y-4">
-              <div className="flex items-center justify-between text-xs font-mono text-stone-400">
+            <div className="lg:col-span-7 bg-[#20332D] p-5 sm:p-6 rounded-2xl border border-[#174C3C] text-white space-y-4 shadow-sm">
+              <div className="flex items-center justify-between text-xs font-mono text-[#E8E2D5]">
                 <span>MÔ HÌNH TRỰC QUAN HÓA THÍ NGHIỆM</span>
-                <span className="text-emerald-400 font-bold">
+                <span className="text-[#D6AA55] font-bold">
                   {isRunning ? '● Đang chuyển động' : '○ Trạng thái tĩnh'}
                 </span>
               </div>
@@ -487,8 +497,8 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
 
               {/* Station Audio preview if acoustic */}
               {(stationId === 7 || stationId === 13) && (
-                <div className="flex items-center justify-between p-3 bg-stone-950/80 rounded border border-stone-800 text-xs">
-                  <span className="text-stone-400 font-mono">Nghe âm thanh cộng hưởng tổng hợp:</span>
+                <div className="flex items-center justify-between p-3.5 bg-black/20 rounded-xl border border-[#174C3C] text-xs">
+                  <span className="text-[#E8E2D5] font-mono">Nghe âm thanh cộng hưởng tổng hợp:</span>
                   <button
                     type="button"
                     onClick={() =>
@@ -498,27 +508,27 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                           : (computed as { barFrequency: number }).barFrequency || 392
                       )
                     }
-                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded font-medium flex items-center gap-1.5"
+                    className="min-h-[40px] px-4 py-2 bg-[#174C3C] hover:bg-[#11382C] text-white rounded-lg font-bold flex items-center gap-2 border border-[#D6AA55]/50 transition-colors"
                   >
-                    <Volume2 className="w-4 h-4" /> Phát âm nốt
+                    <Volume2 className="w-4 h-4 text-[#D6AA55]" /> Phát âm nốt
                   </button>
                 </div>
               )}
             </div>
 
             {/* Right: Controls & Results Table (5 cols) */}
-            <div className="lg:col-span-5 bg-white p-5 rounded-lg border border-stone-200 space-y-4">
-              <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
+            <div className="lg:col-span-5 bg-white p-5 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4 shadow-xs">
+              <h3 className="text-xs font-bold text-[#174C3C] uppercase tracking-wider border-b border-[#E8E2D5] pb-2.5">
                 Điều chỉnh tham số thực nghiệm
               </h3>
 
               {/* Parameter 1 Slider */}
-              <div className="space-y-1 text-xs">
+              <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="font-semibold text-stone-700">
+                  <span className="font-bold text-[#20332D]">
                     {stationId === 4 ? 'Mật độ nan (nan/cm):' : stationId === 5 ? 'Bán kính guồng R (m):' : stationId === 7 ? 'Chiều dài sáo L (cm):' : stationId === 10 ? 'Độ dốc sườn (°):' : stationId === 12 ? 'Khối lượng thúng 1 (kg):' : stationId === 14 ? 'Bán kính miệng r (cm):' : stationId === 16 ? 'Độ dốc mái θ (°):' : 'Biến số 1:'}
                   </span>
-                  <span className="font-mono text-emerald-800 font-bold">{param1}</span>
+                  <span className="font-mono text-[#174C3C] font-bold">{param1}</span>
                 </div>
                 <input
                   type="range"
@@ -526,17 +536,17 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                   max={stationId === 4 ? 5 : stationId === 5 ? 4.5 : stationId === 7 ? 65 : stationId === 10 ? 45 : stationId === 12 ? 35 : stationId === 14 ? 15 : 60}
                   value={param1}
                   onChange={(e) => setParam1(parseFloat(e.target.value))}
-                  className="w-full accent-emerald-700"
+                  className="w-full accent-[#174C3C]"
                 />
               </div>
 
               {/* Parameter 2 Slider */}
-              <div className="space-y-1 text-xs">
+              <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="font-semibold text-stone-700">
+                  <span className="font-bold text-[#20332D]">
                     {stationId === 4 ? 'Tải trọng thử (kg):' : stationId === 5 ? 'Vận tốc dòng nước (m/s):' : stationId === 7 ? 'Nhiệt độ không khí (°C):' : stationId === 10 ? 'Số bậc thang:' : stationId === 12 ? 'Khối lượng thúng 2 (kg):' : stationId === 14 ? 'Bán kính đáy R (cm):' : stationId === 16 ? 'Diện tích mái (m²):' : 'Biến số 2:'}
                   </span>
-                  <span className="font-mono text-emerald-800 font-bold">{param2}</span>
+                  <span className="font-mono text-[#174C3C] font-bold">{param2}</span>
                 </div>
                 <input
                   type="range"
@@ -544,18 +554,18 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                   max={stationId === 4 ? 30 : stationId === 5 ? 3.0 : stationId === 7 ? 40 : stationId === 10 ? 8 : stationId === 12 ? 35 : stationId === 14 ? 50 : 120}
                   value={param2}
                   onChange={(e) => setParam2(parseFloat(e.target.value))}
-                  className="w-full accent-emerald-700"
+                  className="w-full accent-[#174C3C]"
                 />
               </div>
 
               {/* Mode Select if applicable */}
               {stationId === 4 && (
-                <div className="space-y-1 text-xs">
-                  <label className="font-semibold text-stone-700">Kiểu đan kết cấu:</label>
+                <div className="space-y-1.5 text-xs">
+                  <label className="font-bold text-[#20332D]">Kiểu đan kết cấu:</label>
                   <select
                     value={selectMode}
                     onChange={(e) => setSelectMode(e.target.value)}
-                    className="w-full p-2 bg-stone-50 border border-stone-300 rounded text-xs"
+                    className="w-full min-h-[44px] px-3 bg-[#FAF7F0] border border-[#E8E2D5] rounded-xl text-xs font-semibold text-[#20332D] focus:ring-2 focus:ring-[#174C3C]"
                   >
                     <option value="mat_cao">Đan mắt cáo lục giác (Triaxial - Chịu tải tối ưu)</option>
                     <option value="nong_doi">Đan nong đôi</option>
@@ -565,14 +575,14 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
               )}
 
               {/* Computed Results Display Card */}
-              <div className="p-3.5 bg-stone-50 rounded border border-stone-200 text-xs space-y-1.5">
-                <div className="font-bold text-stone-900 uppercase tracking-wider">
+              <div className="p-4 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] text-xs space-y-1.5">
+                <div className="font-bold text-[#174C3C] uppercase tracking-wider">
                   Kết quả tính toán thời gian thực:
                 </div>
                 {Object.entries(computed).map(([k, val]) => (
                   <div key={k} className="flex items-center justify-between font-mono">
-                    <span className="text-stone-600 font-sans">{k}:</span>
-                    <span className="text-emerald-800 font-bold">{String(val)}</span>
+                    <span className="text-[#556D65] font-sans">{k}:</span>
+                    <span className="text-[#174C3C] font-bold">{String(val)}</span>
                   </div>
                 ))}
               </div>
@@ -581,19 +591,19 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                 <button
                   type="button"
                   onClick={() => setIsRunning(!isRunning)}
-                  className={`flex-1 py-2 rounded text-xs font-medium transition-colors ${
-                    isRunning ? 'bg-amber-600 text-white' : 'bg-stone-800 text-white'
+                  className={`flex-1 min-h-[44px] rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs ${
+                    isRunning ? 'bg-[#A94438] text-white hover:bg-[#8D372C]' : 'bg-[#174C3C] text-white hover:bg-[#11382C]'
                   }`}
                 >
-                  {isRunning ? 'Tạm dừng mô phỏng' : 'Chạy mô phỏng liên tục'}
+                  {isRunning ? 'Tạm dừng mô phỏng' : 'Chạy mô phỏng'}
                 </button>
 
                 <button
                   type="button"
                   onClick={handleSaveToJournal}
-                  className="flex-1 py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded text-xs font-medium flex items-center justify-center gap-1"
+                  className="flex-1 min-h-[44px] bg-white border border-[#E8E2D5] hover:bg-[#FAF7F0] text-[#174C3C] rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
                 >
-                  <FileText className="w-3.5 h-3.5" /> Lưu kết quả
+                  <FileText className="w-4 h-4 text-[#D6AA55]" /> Lưu kết quả
                 </button>
               </div>
             </div>
@@ -603,38 +613,80 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
 
       {/* STEP 1: Context */}
       {activeStep === 1 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-lg font-bold text-stone-900">{station.steps.context.title}</h2>
-          <p>{station.steps.context.description}</p>
-          <div className="p-3 bg-stone-50 rounded border border-stone-200">
-            <h3 className="font-bold text-xs uppercase text-stone-800 mb-2">Chi tiết di sản văn hóa:</h3>
-            <ul className="list-disc pl-5 space-y-1">
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <BookOpen className="w-4 h-4 text-[#D6AA55]" />
+            Bối cảnh di sản & Tri thức dân gian
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">{station.steps.context.title}</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed font-normal">{station.steps.context.description}</p>
+          <div className="p-5 bg-[#FAF7F0] rounded-2xl border border-[#E8E2D5] space-y-3">
+            <h3 className="font-bold text-xs uppercase text-[#174C3C] tracking-wider">Chi tiết di sản văn hóa:</h3>
+            <ul className="space-y-2 text-sm text-[#20332D]">
               {station.steps.context.culturalDetails.map((d, i) => (
-                <li key={i}>{d}</li>
+                <li key={i} className="flex items-start gap-2.5">
+                  <span className="text-[#A94438] font-bold mt-0.5">•</span>
+                  <span className="leading-relaxed">{d}</span>
+                </li>
               ))}
             </ul>
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Tiếp tục: Bước 2 – Câu hỏi STEM →
+            </button>
           </div>
         </div>
       )}
 
       {/* STEP 2: STEM Question */}
       {activeStep === 2 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-lg font-bold text-stone-900">{station.steps.stemQuestion.question}</h2>
-          <p>{station.steps.stemQuestion.contextExplanation}</p>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-[#D6AA55]" />
+            Vấn đề khoa học cốt lõi
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">{station.steps.stemQuestion.question}</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">{station.steps.stemQuestion.contextExplanation}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(1)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại Bước 1
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(3)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Tiếp tục: Bước 3 – Đưa ra dự đoán →
+            </button>
+          </div>
         </div>
       )}
 
       {/* STEP 3: Prediction */}
       {activeStep === 3 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
-          <h2 className="text-base font-bold text-stone-900">{station.steps.prediction.prompt}</h2>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <Sliders className="w-4 h-4 text-[#D6AA55]" />
+            Hình thành giả thuyết nghiên cứu
+          </div>
+          <h2 className="text-base sm:text-lg font-bold text-[#20332D]">{station.steps.prediction.prompt}</h2>
           <div className="space-y-3">
             {station.steps.prediction.options.map((opt) => (
               <label
                 key={opt.id}
-                className={`flex items-start gap-3 p-3.5 rounded border cursor-pointer ${
-                  selectedPrediction === opt.id ? 'border-emerald-600 bg-emerald-50' : 'border-stone-200'
+                className={`flex items-start gap-3.5 p-4 rounded-xl border cursor-pointer transition-all ${
+                  selectedPrediction === opt.id
+                    ? 'border-[#174C3C] bg-[#EBF2EE] ring-1 ring-[#174C3C]/30'
+                    : 'border-[#E8E2D5] hover:bg-[#FAF7F0]'
                 }`}
               >
                 <input
@@ -642,23 +694,45 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                   name={`pred_${stationId}`}
                   checked={selectedPrediction === opt.id}
                   onChange={() => setSelectedPrediction(opt.id)}
-                  className="mt-1 text-emerald-700"
+                  className="mt-1 text-[#174C3C] focus:ring-[#174C3C]"
                 />
                 <div>
-                  <div className="text-sm font-semibold text-stone-900">{opt.label}</div>
-                  <div className="text-xs text-stone-600">{opt.explanation}</div>
+                  <div className="text-sm font-bold text-[#20332D]">{opt.label}</div>
+                  <div className="text-xs text-[#556D65] mt-1 leading-relaxed">{opt.explanation}</div>
                 </div>
               </label>
             ))}
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(2)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(4)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Chuyển sang Bước 4: Thí nghiệm số →
+            </button>
           </div>
         </div>
       )}
 
       {/* STEP 5: Data Analysis Table */}
       {activeStep === 5 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-base font-bold text-stone-900">Bảng dữ liệu thực nghiệm đã ghi</h2>
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E8E2D5] pb-3">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+                <FileText className="w-4 h-4 text-[#D6AA55]" />
+                Dữ liệu thực nghiệm
+              </div>
+              <h2 className="text-xl font-bold text-[#174C3C] mt-0.5">Bảng dữ liệu thực nghiệm đã ghi</h2>
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -666,66 +740,115 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                 const rows = [[station.title, station.keyFormula || '', JSON.stringify(computed)]];
                 exportToCSV(`tram${station.numberStr}_du_lieu.csv`, headers, rows);
               }}
-              className="px-3 py-1.5 border border-stone-300 rounded text-xs flex items-center gap-1 text-stone-700 hover:bg-stone-50"
+              className="min-h-[44px] px-4 py-2 border border-[#E8E2D5] rounded-xl text-xs sm:text-sm font-bold text-[#20332D] hover:bg-[#FAF7F0] flex items-center gap-2 transition-colors shadow-2xs"
             >
-              <Download className="w-3.5 h-3.5" /> Xuất CSV
+              <Download className="w-4 h-4 text-[#174C3C]" /> Xuất CSV
             </button>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded border border-stone-200 text-xs space-y-2">
-            <div className="font-bold text-stone-800">Biến số đầu vào:</div>
-            <div className="font-mono text-stone-700">
+          <div className="p-5 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] text-xs space-y-3">
+            <div className="font-bold text-[#174C3C] uppercase tracking-wider">Biến số đầu vào:</div>
+            <div className="font-mono text-[#20332D] bg-white p-3 rounded-lg border border-[#E8E2D5]">
               Param1 = {param1} · Param2 = {param2} · Mode = {selectMode}
             </div>
-            <div className="font-bold text-stone-800 pt-2 border-t border-stone-200">
+            <div className="font-bold text-[#174C3C] uppercase tracking-wider pt-2">
               Đại lượng đầu ra tính toán:
             </div>
-            <div className="font-mono text-emerald-800 font-semibold">
+            <div className="font-mono text-[#174C3C] font-semibold bg-white p-3 rounded-lg border border-[#E8E2D5]">
               {JSON.stringify(computed, null, 2)}
             </div>
+          </div>
+
+          <div className="flex justify-between pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(4)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại Thí nghiệm
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(6)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Chuyển sang Bước 6: Thử thách STEM →
+            </button>
           </div>
         </div>
       )}
 
       {/* STEP 6: Challenge */}
       {activeStep === 6 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-base font-bold text-stone-900">{station.steps.challenge.title}</h2>
-          <p>{station.steps.challenge.scenario}</p>
-          <div className="p-3 bg-stone-50 rounded border border-stone-200 text-xs">
-            <strong>Nhiệm vụ:</strong> {station.steps.challenge.task}
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <Award className="w-4 h-4 text-[#D6AA55]" />
+            Thử thách khoa học
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">{station.steps.challenge.title}</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">{station.steps.challenge.scenario}</p>
+          <div className="p-4 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] text-xs sm:text-sm text-[#20332D]">
+            <strong className="text-[#174C3C]">Nhiệm vụ:</strong> {station.steps.challenge.task}
           </div>
           <textarea
             value={challengeAnswer}
             onChange={(e) => setChallengeAnswer(e.target.value)}
             placeholder="Nhập câu trả lời và lập luận dựa trên bằng chứng khoa học của bạn..."
             rows={3}
-            className="w-full p-2.5 border border-stone-300 rounded text-xs focus:ring-1 focus:ring-emerald-700"
+            className="w-full p-3.5 border border-[#E8E2D5] bg-[#FAF7F0] rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-[#174C3C] focus:outline-hidden"
           />
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(5)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep(7)}
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] transition-all shadow-xs active:scale-98"
+            >
+              Chuyển sang Bước 7: Phản tư →
+            </button>
+          </div>
         </div>
       )}
 
       {/* STEP 7: Reflection */}
       {activeStep === 7 && (
-        <div className="bg-white border border-stone-200 rounded-lg p-6 space-y-4 text-sm text-stone-700">
-          <h2 className="text-base font-bold text-stone-900">Phản tư & Kết nối di sản</h2>
-          <p>{station.steps.reflection.culturalConnection}</p>
-          <div className="p-3 bg-amber-50 rounded border border-amber-200 text-xs text-amber-900">
-            <strong>Giới hạn vật lý:</strong> {station.steps.reflection.physicalLimitations.join(' ')}
+        <div className="bg-white border border-[#E8E2D5] rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-[#D6AA55]" />
+            Phản tư & Kết nối di sản
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#174C3C] tracking-tight">Phản tư & Kết nối di sản văn hóa</h2>
+          <p className="text-sm sm:text-base text-[#20332D] leading-relaxed">{station.steps.reflection.culturalConnection}</p>
+          <div className="p-4 bg-[#FBF0EE] rounded-xl border border-[#A94438]/30 text-xs text-[#20332D]">
+            <strong className="text-[#A94438]">Giới hạn vật lý & Sai số:</strong> {station.steps.reflection.physicalLimitations.join(' ')}
           </div>
           <textarea
             value={reflectionAnswer}
             onChange={(e) => setReflectionAnswer(e.target.value)}
             placeholder="Ghi nhận phản tư của bạn về bài học STEM và trí tuệ bản địa..."
             rows={3}
-            className="w-full p-2.5 border border-stone-300 rounded text-xs focus:ring-1 focus:ring-emerald-700"
+            className="w-full p-3.5 border border-[#E8E2D5] bg-[#FAF7F0] rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-[#174C3C] focus:outline-hidden"
           />
-          <div className="flex justify-end pt-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveStep(6)}
+              className="min-h-[44px] px-5 py-2.5 border border-[#E8E2D5] text-[#20332D] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#FAF7F0] transition-colors"
+            >
+              ← Quay lại
+            </button>
             <button
               type="button"
               onClick={handleSaveToJournal}
-              className="px-4 py-2 bg-emerald-800 text-white rounded text-xs font-medium hover:bg-emerald-900"
+              className="min-h-[44px] px-6 py-2.5 bg-[#174C3C] text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-[#11382C] flex items-center gap-2 shadow-xs active:scale-98"
             >
+              <CheckCircle2 className="w-4 h-4 text-[#D6AA55]" />
               Hoàn thành trạm & Lưu vào Nhật ký
             </button>
           </div>
