@@ -22,12 +22,36 @@ import { WaveformCanvas } from '../components/audio/WaveformCanvas';
 import { SpectrumCanvas } from '../components/audio/SpectrumCanvas';
 import { GongInteractiveGraphic } from '../components/audio/GongInteractiveGraphic';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
-import { saveResearchLog, exportToCSV, getCurrentStudent, saveAudioRecord } from '../utils/storage';
+import { 
+  saveResearchLog, 
+  exportToCSV, 
+  getCurrentStudent, 
+  saveAudioRecord,
+  markStationVisited,
+  getCompletedStations,
+  toggleStationCompleted
+} from '../utils/storage';
 
 export const Station01ChiengMuong: React.FC = () => {
   const station = STATIONS_DATA[0]; // Station 01
   const [activeStep, setActiveStep] = useState<number>(4); // Default to digital experiment (Step 4)
   const [labMode, setLabMode] = useState<'synthetic' | 'real_analysis'>('synthetic');
+  const [isCompleted, setIsCompleted] = useState<boolean>(() => getCompletedStations().includes(1));
+
+  useEffect(() => {
+    markStationVisited(1);
+    setIsCompleted(getCompletedStations().includes(1));
+
+    const handleProgress = () => {
+      setIsCompleted(getCompletedStations().includes(1));
+    };
+    window.addEventListener('emgis_progress_updated', handleProgress);
+    window.addEventListener('storage', handleProgress);
+    return () => {
+      window.removeEventListener('emgis_progress_updated', handleProgress);
+      window.removeEventListener('storage', handleProgress);
+    };
+  }, []);
 
   // Mode A: Synthetic model state
   const [presetKey, setPresetKey] = useState<string>('chieng_dam_soft');
@@ -270,12 +294,27 @@ export const Station01ChiengMuong: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 mb-3 pt-1">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
-              TRẠM {station.numberStr}
-            </span>
-            <span className="text-xs text-[#D6AA55]">·</span>
-            <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs font-bold text-[#174C3C] bg-[#EBF2EE] px-2.5 py-1 rounded-lg border border-[#174C3C]/20">
+                TRẠM {station.numberStr}
+              </span>
+              <span className="text-xs text-[#D6AA55]">·</span>
+              <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => toggleStationCompleted(1)}
+              className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+                isCompleted
+                  ? 'bg-[#174C3C] text-white border-[#174C3C] shadow-2xs hover:bg-[#11382C]'
+                  : 'bg-white hover:bg-[#FAF7F0] border-[#E8E2D5] text-[#556D65] hover:text-[#174C3C]'
+              }`}
+              title="Đánh dấu hoàn thành trạm để cập nhật tiến độ trên thanh tiêu đề"
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#D6AA55]' : 'text-[#8A9E96]'}`} />
+              {isCompleted ? 'Đã hoàn thành' : 'Đánh dấu hoàn thành'}
+            </button>
           </div>
 
           {/* Mode Switcher */}

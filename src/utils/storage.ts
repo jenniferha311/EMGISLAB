@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   PRE_POST_SURVEYS: 'emgis_surveys',
   AUDIO_RECORDS: 'emgis_audio_records',
   COMPLETED_STATIONS: 'emgis_completed_stations',
+  VISITED_STATIONS: 'emgis_visited_stations',
 };
 
 // Initial default student
@@ -63,23 +64,113 @@ export function deleteResearchLog(id: string): void {
   }
 }
 
-// Completed Stations Tracker
+// Helper to notify progress changes across all UI components
+function dispatchProgressEvent(): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('emgis_progress_updated', {
+      detail: {
+        visited: getVisitedStations(),
+        completed: getCompletedStations(),
+      }
+    }));
+  }
+}
+
+// Visited Stations Tracker (1-16)
+export function getVisitedStations(): number[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.VISITED_STATIONS);
+    const parsed: number[] = raw ? JSON.parse(raw) : [1];
+    const set = new Set<number>(Array.isArray(parsed) ? parsed : [1]);
+    // Also any completed station is considered visited
+    const completedRaw = localStorage.getItem(STORAGE_KEYS.COMPLETED_STATIONS);
+    if (completedRaw) {
+      const compArr: number[] = JSON.parse(completedRaw);
+      compArr.forEach((id) => set.add(id));
+    }
+    // Also include any stations found in research logs
+    const logs = getResearchLogs();
+    logs.forEach((log) => {
+      if (log.stationId) set.add(log.stationId);
+    });
+    // Ensure station IDs are within 1..16
+    return Array.from(set).filter((id) => id >= 1 && id <= 16).sort((a, b) => a - b);
+  } catch {
+    return [1];
+  }
+}
+
+export function markStationVisited(stationId: number): void {
+  if (!stationId || stationId < 1 || stationId > 16) return;
+  try {
+    const current = getVisitedStations();
+    const set = new Set(current);
+    if (!set.has(stationId)) {
+      set.add(stationId);
+      localStorage.setItem(STORAGE_KEYS.VISITED_STATIONS, JSON.stringify(Array.from(set)));
+      dispatchProgressEvent();
+    }
+  } catch (e) {
+    console.error('Failed to mark station visited', e);
+  }
+}
+
+// Completed Stations Tracker (1-16)
 export function getCompletedStations(): number[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.COMPLETED_STATIONS);
-    return raw ? JSON.parse(raw) : [1];
+    const parsed: number[] = raw ? JSON.parse(raw) : [1];
+    const set = new Set<number>(Array.isArray(parsed) ? parsed : [1]);
+    // Also include any stations found in research logs
+    const logs = getResearchLogs();
+    logs.forEach((log) => {
+      if (log.stationId) set.add(log.stationId);
+    });
+    return Array.from(set).filter((id) => id >= 1 && id <= 16).sort((a, b) => a - b);
   } catch {
     return [1];
   }
 }
 
 export function markStationCompleted(stationId: number): void {
+  if (!stationId || stationId < 1 || stationId > 16) return;
   try {
+    // A completed station is definitely also visited
+    const visitedSet = new Set(getVisitedStations());
+    visitedSet.add(stationId);
+    localStorage.setItem(STORAGE_KEYS.VISITED_STATIONS, JSON.stringify(Array.from(visitedSet)));
+
     const set = new Set(getCompletedStations());
     set.add(stationId);
     localStorage.setItem(STORAGE_KEYS.COMPLETED_STATIONS, JSON.stringify(Array.from(set)));
+    dispatchProgressEvent();
   } catch (e) {
-    console.error(e);
+    console.error('Failed to mark station completed', e);
+  }
+}
+
+export function toggleStationCompleted(stationId: number): boolean {
+  if (!stationId || stationId < 1 || stationId > 16) return false;
+  try {
+    const set = new Set(getCompletedStations());
+    let isNowCompleted = false;
+    if (set.has(stationId)) {
+      set.delete(stationId);
+      isNowCompleted = false;
+    } else {
+      set.add(stationId);
+      isNowCompleted = true;
+      // Also ensure it is marked visited
+      const visitedSet = new Set(getVisitedStations());
+      visitedSet.add(stationId);
+      localStorage.setItem(STORAGE_KEYS.VISITED_STATIONS, JSON.stringify(Array.from(visitedSet)));
+    }
+    localStorage.setItem(STORAGE_KEYS.COMPLETED_STATIONS, JSON.stringify(Array.from(set)));
+    dispatchProgressEvent();
+    return isNowCompleted;
+  } catch (e) {
+    console.error('Failed to toggle station completed', e);
+    return false;
   }
 }
 

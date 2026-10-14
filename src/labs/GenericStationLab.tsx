@@ -15,7 +15,14 @@ import {
 } from 'lucide-react';
 import { StationMeta } from '../types';
 import { STATIONS_DATA } from '../data/stationsData';
-import { saveResearchLog, getCurrentStudent, exportToCSV } from '../utils/storage';
+import { 
+  saveResearchLog, 
+  getCurrentStudent, 
+  exportToCSV, 
+  markStationVisited, 
+  getCompletedStations, 
+  toggleStationCompleted 
+} from '../utils/storage';
 import { audioEngine } from '../utils/audioEngine';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 
@@ -26,6 +33,22 @@ interface GenericStationLabProps {
 export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId }) => {
   const station = STATIONS_DATA.find((s) => s.id === stationId) || STATIONS_DATA[3];
   const [activeStep, setActiveStep] = useState<number>(4);
+  const [isCompleted, setIsCompleted] = useState<boolean>(() => getCompletedStations().includes(stationId));
+
+  useEffect(() => {
+    markStationVisited(stationId);
+    setIsCompleted(getCompletedStations().includes(stationId));
+
+    const handleProgress = () => {
+      setIsCompleted(getCompletedStations().includes(stationId));
+    };
+    window.addEventListener('emgis_progress_updated', handleProgress);
+    window.addEventListener('storage', handleProgress);
+    return () => {
+      window.removeEventListener('emgis_progress_updated', handleProgress);
+      window.removeEventListener('storage', handleProgress);
+    };
+  }, [stationId]);
 
   // General simulation parameters per station
   const [param1, setParam1] = useState<number>(50);
@@ -214,7 +237,23 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
             <span className="text-xs text-[#D6AA55]">·</span>
             <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
           </div>
-          <span className="text-xs text-[#556D65] font-medium">{station.locationContext}</span>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[#556D65] font-medium hidden sm:inline">{station.locationContext}</span>
+            <button
+              type="button"
+              onClick={() => toggleStationCompleted(stationId)}
+              className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+                isCompleted
+                  ? 'bg-[#174C3C] text-white border-[#174C3C] shadow-2xs hover:bg-[#11382C]'
+                  : 'bg-white hover:bg-[#FAF7F0] border-[#E8E2D5] text-[#556D65] hover:text-[#174C3C]'
+              }`}
+              title="Đánh dấu hoàn thành trạm để cập nhật tiến độ trên thanh tiêu đề"
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#D6AA55]' : 'text-[#8A9E96]'}`} />
+              {isCompleted ? 'Đã hoàn thành' : 'Đánh dấu hoàn thành'}
+            </button>
+          </div>
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#174C3C] tracking-tight">{station.title}</h1>

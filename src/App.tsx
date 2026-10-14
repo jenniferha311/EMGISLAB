@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Mountain, 
   ArrowLeft, 
@@ -26,13 +26,22 @@ import { ScientificCultureModal } from './components/ScientificCultureModal';
 import { HeroIllustration } from './components/HeroIllustration';
 import { MuongPatternBorder } from './components/MuongPatternBorder';
 import { STATIONS_DATA } from './data/stationsData';
+import { markStationVisited } from './utils/storage';
 
 export default function App() {
   const [activeView, setActiveView] = useState<'map' | 'station' | 'tamdao' | 'research'>('map');
   const [activeStationId, setActiveStationId] = useState<number>(1);
   const [isCultureModalOpen, setIsCultureModalOpen] = useState<boolean>(false);
 
+  // Mark station visited whenever user enters or changes active station
+  useEffect(() => {
+    if (activeView === 'station') {
+      markStationVisited(activeStationId);
+    }
+  }, [activeView, activeStationId]);
+
   const handleSelectStation = (id: number) => {
+    markStationVisited(id);
     setActiveStationId(id);
     setActiveView('station');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -45,14 +54,18 @@ export default function App() {
 
   const handleNextStation = () => {
     if (activeStationId < 16) {
-      setActiveStationId(activeStationId + 1);
+      const nextId = activeStationId + 1;
+      markStationVisited(nextId);
+      setActiveStationId(nextId);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handlePrevStation = () => {
     if (activeStationId > 1) {
-      setActiveStationId(activeStationId - 1);
+      const prevId = activeStationId - 1;
+      markStationVisited(prevId);
+      setActiveStationId(prevId);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

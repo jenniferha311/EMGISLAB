@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Download, RotateCcw, CheckCircle2, Grid, Sparkles, FileText, ArrowRight, BookOpen, HelpCircle, Sliders, Award } from 'lucide-react';
 import { STATIONS_DATA } from '../data/stationsData';
-import { saveResearchLog, getCurrentStudent } from '../utils/storage';
+import { 
+  saveResearchLog, 
+  getCurrentStudent, 
+  markStationVisited, 
+  getCompletedStations, 
+  toggleStationCompleted 
+} from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 
 const MOTIF_TEMPLATES: Record<string, { name: string; grid: number[][] }> = {
@@ -56,6 +62,22 @@ const COLOR_PALETTES = [
 export const Station02ThoCam: React.FC = () => {
   const station = STATIONS_DATA[1];
   const [activeStep, setActiveStep] = useState<number>(4);
+  const [isCompleted, setIsCompleted] = useState<boolean>(() => getCompletedStations().includes(2));
+
+  useEffect(() => {
+    markStationVisited(2);
+    setIsCompleted(getCompletedStations().includes(2));
+
+    const handleProgress = () => {
+      setIsCompleted(getCompletedStations().includes(2));
+    };
+    window.addEventListener('emgis_progress_updated', handleProgress);
+    window.addEventListener('storage', handleProgress);
+    return () => {
+      window.removeEventListener('emgis_progress_updated', handleProgress);
+      window.removeEventListener('storage', handleProgress);
+    };
+  }, []);
 
   // Simulation controls
   const [currentMotifKey, setCurrentMotifKey] = useState<string>('qua_tram');
@@ -202,7 +224,23 @@ export const Station02ThoCam: React.FC = () => {
             <span className="text-xs text-[#D6AA55]">·</span>
             <span className="text-xs font-semibold text-[#556D65]">{station.stemDomainLabel}</span>
           </div>
-          <span className="text-xs text-[#556D65] font-medium">{station.locationContext}</span>
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[#556D65] font-medium hidden sm:inline">{station.locationContext}</span>
+            <button
+              type="button"
+              onClick={() => toggleStationCompleted(2)}
+              className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+                isCompleted
+                  ? 'bg-[#174C3C] text-white border-[#174C3C] shadow-2xs hover:bg-[#11382C]'
+                  : 'bg-white hover:bg-[#FAF7F0] border-[#E8E2D5] text-[#556D65] hover:text-[#174C3C]'
+              }`}
+              title="Đánh dấu hoàn thành trạm để cập nhật tiến độ trên thanh tiêu đề"
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-[#D6AA55]' : 'text-[#8A9E96]'}`} />
+              {isCompleted ? 'Đã hoàn thành' : 'Đánh dấu hoàn thành'}
+            </button>
+          </div>
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#174C3C] tracking-tight">{station.title}</h1>

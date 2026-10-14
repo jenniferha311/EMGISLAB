@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Mountain, ArrowRight, CheckCircle2, Compass, Filter, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mountain, ArrowRight, CheckCircle2, Compass, Filter, Sparkles, HelpCircle } from 'lucide-react';
 import { STATIONS_DATA } from '../data/stationsData';
 import { STEMDomain } from '../types';
-import { getCompletedStations } from '../utils/storage';
+import { getCompletedStations, getVisitedStations } from '../utils/storage';
 import { MuongPatternBorder } from './MuongPatternBorder';
 
 interface StationsMapGridProps {
@@ -19,7 +19,21 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
   isTamDaoActive,
 }) => {
   const [selectedDomain, setSelectedDomain] = useState<STEMDomain | 'all'>('all');
-  const completedStations = getCompletedStations();
+  const [visitedStations, setVisitedStations] = useState<number[]>(() => getVisitedStations());
+  const [completedStations, setCompletedStations] = useState<number[]>(() => getCompletedStations());
+
+  useEffect(() => {
+    const handleProgress = () => {
+      setVisitedStations(getVisitedStations());
+      setCompletedStations(getCompletedStations());
+    };
+    window.addEventListener('emgis_progress_updated', handleProgress);
+    window.addEventListener('storage', handleProgress);
+    return () => {
+      window.removeEventListener('emgis_progress_updated', handleProgress);
+      window.removeEventListener('storage', handleProgress);
+    };
+  }, []);
 
   const domainTabs: { id: STEMDomain | 'all'; label: string }[] = [
     { id: 'all', label: 'Tất cả (16 Trạm)' },
@@ -88,6 +102,31 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
         </div>
       </div>
 
+      {/* Visual Learning Progress Banner */}
+      <div className="bg-white border border-[#E8E2D5] rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#174C3C] uppercase tracking-wide">
+            <Compass className="w-4 h-4 text-[#D6AA55]" />
+            Tiến độ khám phá 16 Trạm STEM
+          </div>
+          <div className="text-xs text-[#556D65]">
+            Đã ghé thăm <strong>{visitedStations.length}/16</strong> trạm · Đã hoàn thành <strong>{completedStations.length}/16</strong> trạm
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-72">
+          <div className="flex-1 h-2.5 bg-[#FAF7F0] border border-[#E8E2D5] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#174C3C] via-[#205E4C] to-[#D6AA55] rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${Math.round((visitedStations.length / 16) * 100)}%` }}
+            />
+          </div>
+          <span className="font-mono text-xs font-bold text-[#174C3C] shrink-0">
+            {Math.round((visitedStations.length / 16) * 100)}%
+          </span>
+        </div>
+      </div>
+
       {/* Domain Filters (Segmented Filter Bar) */}
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -123,6 +162,7 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
       {/* Stations Grid (16 Interactive Stations) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {filteredStations.map((station) => {
+          const isVisited = visitedStations.includes(station.id);
           const isCompleted = completedStations.includes(station.id);
           const isSelected = activeStationId === station.id && !isTamDaoActive;
 
@@ -150,10 +190,19 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
                     </span>
                   </div>
 
-                  {isCompleted && (
+                  {isCompleted ? (
                     <span className="text-[#174C3C] font-semibold text-[11px] flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#174C3C]" />
-                      Đã ghi
+                      Đã hoàn thành
+                    </span>
+                  ) : isVisited ? (
+                    <span className="text-[#556D65] font-semibold text-[11px] flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#174C3C]" />
+                      Đã ghé thăm
+                    </span>
+                  ) : (
+                    <span className="text-[#8A9E96] text-[11px]">
+                      Chưa ghé thăm
                     </span>
                   )}
                 </div>
@@ -163,26 +212,27 @@ export const StationsMapGrid: React.FC<StationsMapGridProps> = ({
                   {station.title}
                 </h3>
 
-                {/* Subtitle */}
-                <p className="text-xs text-[#556D65] leading-relaxed line-clamp-2">
+                {/* Subtitle / Topic */}
+                <p className="text-xs text-[#556D65] leading-relaxed line-clamp-1">
                   {station.subtitle}
                 </p>
 
-                {/* Key formula preview */}
-                {station.keyFormula && (
-                  <div className="font-mono text-[11px] bg-[#FAF7F0] px-2.5 py-1.5 rounded-lg border border-[#E8E2D5] text-[#20332D] truncate">
-                    {station.keyFormula}
-                  </div>
-                )}
+                {/* Curiosity Question (Câu hỏi gợi tò mò, dễ hiểu - Không công thức) */}
+                <div className="bg-[#FAF7F0] p-3 rounded-xl border border-[#E8E2D5] text-xs text-[#174C3C] flex items-start gap-2.5 min-h-[64px]">
+                  <HelpCircle className="w-4 h-4 shrink-0 text-[#D6AA55] mt-0.5" />
+                  <p className="font-medium italic leading-snug line-clamp-3">
+                    "{station.steps.stemQuestion.question}"
+                  </p>
+                </div>
               </div>
 
               {/* Card Footer: Heritage context & CTA */}
               <div className="pt-3.5 mt-3.5 border-t border-[#E8E2D5] flex items-center justify-between text-xs">
-                <span className="truncate max-w-[170px] text-[11px] text-[#556D65]" title={station.culturalHeritage}>
+                <span className="truncate max-w-[140px] text-[11px] text-[#556D65]" title={station.culturalHeritage}>
                   {station.culturalHeritage}
                 </span>
-                <span className="font-bold text-xs text-[#174C3C] flex items-center gap-1 group-hover:text-[#A94438] transition-colors">
-                  Vào trạm <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <span className="font-bold text-xs text-[#174C3C] flex items-center gap-1.5 group-hover:text-[#A94438] transition-colors bg-[#EBF2EE] group-hover:bg-[#FAF7F0] px-3 py-1.5 rounded-lg border border-[#174C3C]/20">
+                  Vào thí nghiệm <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
             </div>

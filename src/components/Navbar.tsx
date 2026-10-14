@@ -7,10 +7,12 @@ import {
   Users, 
   Menu, 
   X,
-  Compass
+  Compass,
+  Sparkles
 } from 'lucide-react';
-import { getCurrentStudent } from '../utils/storage';
+import { getCurrentStudent, getVisitedStations, getCompletedStations } from '../utils/storage';
 import { MuongPatternBorder } from './MuongPatternBorder';
+import { HeaderProgressIndicator } from './HeaderProgressIndicator';
 
 interface NavbarProps {
   activeView: 'map' | 'station' | 'tamdao' | 'research';
@@ -32,7 +34,23 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCultureModal,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [visitedStations, setVisitedStations] = useState<number[]>(() => getVisitedStations());
+  const [completedStations, setCompletedStations] = useState<number[]>(() => getCompletedStations());
   const currentStudent = getCurrentStudent();
+
+  // Listen to progress update events
+  useEffect(() => {
+    const handleProgressUpdate = () => {
+      setVisitedStations(getVisitedStations());
+      setCompletedStations(getCompletedStations());
+    };
+    window.addEventListener('emgis_progress_updated', handleProgressUpdate);
+    window.addEventListener('storage', handleProgressUpdate);
+    return () => {
+      window.removeEventListener('emgis_progress_updated', handleProgressUpdate);
+      window.removeEventListener('storage', handleProgressUpdate);
+    };
+  }, []);
 
   // Close mobile menu on escape key
   useEffect(() => {
@@ -144,42 +162,73 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right: Anonymous Student Code Display */}
-          <div className="hidden sm:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onNavigateResearch}
-              className="min-h-[44px] flex items-center gap-2 text-xs bg-white hover:bg-[#EBF2EE] px-3 py-2 rounded-xl border border-[#E8E2D5] text-[#20332D] shadow-2xs transition-colors"
-              title="Nhấn để mở Nhật ký và quản lý mã học sinh"
-            >
-              <div className="w-6 h-6 rounded-lg bg-[#EBF2EE] flex items-center justify-center text-[#174C3C]">
-                <Users className="w-3.5 h-3.5" />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] text-[#556D65] uppercase font-semibold leading-tight">Mã học sinh</div>
-                <div className="font-mono font-bold text-[#174C3C] leading-none">{currentStudent}</div>
-              </div>
-            </button>
-          </div>
+          {/* Right Actions: Progress visual indicator + Student Code + Mobile Hamburger */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Visual Progress Indicator (Updates live as user visits & completes stations) */}
+            <HeaderProgressIndicator
+              onNavigateStation={onNavigateStation}
+              onNavigateMap={onNavigateMap}
+            />
 
-          {/* Mobile Hamburger Button (44px target) */}
-          <div className="flex md:hidden items-center">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-[#20332D] hover:bg-[#EBF2EE] rounded-xl transition-colors"
-              aria-label={mobileMenuOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-[#A94438]" /> : <Menu className="w-6 h-6 text-[#174C3C]" />}
-            </button>
+            {/* Anonymous Student Code Display */}
+            <div className="hidden sm:flex items-center">
+              <button
+                type="button"
+                onClick={onNavigateResearch}
+                className="min-h-[44px] flex items-center gap-2 text-xs bg-white hover:bg-[#EBF2EE] px-3 py-2 rounded-xl border border-[#E8E2D5] text-[#20332D] shadow-2xs transition-colors"
+                title="Nhấn để mở Nhật ký và quản lý mã học sinh"
+              >
+                <div className="w-6 h-6 rounded-lg bg-[#EBF2EE] flex items-center justify-center text-[#174C3C]">
+                  <Users className="w-3.5 h-3.5" />
+                </div>
+                <div className="text-left">
+                  <div className="text-[10px] text-[#556D65] uppercase font-semibold leading-tight">Mã học sinh</div>
+                  <div className="font-mono font-bold text-[#174C3C] leading-none">{currentStudent}</div>
+                </div>
+              </button>
+            </div>
+
+            {/* Mobile Hamburger Button (44px target) */}
+            <div className="flex md:hidden items-center">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-[#20332D] hover:bg-[#EBF2EE] rounded-xl transition-colors"
+                aria-label={mobileMenuOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6 text-[#A94438]" /> : <Menu className="w-6 h-6 text-[#174C3C]" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-[#E8E2D5] px-4 pt-3 pb-5 space-y-2 text-base font-semibold shadow-md animate-in fade-in duration-150">
+        <div className="md:hidden bg-white border-b border-[#E8E2D5] px-4 pt-3 pb-5 space-y-3 text-base font-semibold shadow-md animate-in fade-in duration-150">
+          {/* Mobile Progress Bar Card */}
+          <div className="p-3.5 bg-[#FAF7F0] border border-[#E8E2D5] rounded-xl space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-[#174C3C] flex items-center gap-1.5 uppercase tracking-wide text-[11px]">
+                <Sparkles className="w-3.5 h-3.5 text-[#D6AA55]" /> Tiến độ phòng lab STEM
+              </span>
+              <span className="font-mono font-bold text-[#174C3C]">
+                {visitedStations.length}/16 trạm ({Math.round((visitedStations.length / 16) * 100)}%)
+              </span>
+            </div>
+            <div className="w-full h-2.5 bg-[#E8E2D5] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#174C3C] via-[#205E4C] to-[#D6AA55] rounded-full transition-all duration-300"
+                style={{ width: `${Math.round((visitedStations.length / 16) * 100)}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-[#556D65]">
+              <span>Đã ghé thăm: <strong>{visitedStations.length}</strong> trạm</span>
+              <span>Đã lưu nhật ký: <strong>{completedStations.length}</strong> trạm</span>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={() => {
