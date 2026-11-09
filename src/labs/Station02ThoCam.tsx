@@ -9,6 +9,8 @@ import {
   toggleStationCompleted 
 } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
+import { Station3DViewer } from '../components/three/Station3DViewer';
+import { FormulaAccordion } from '../components/FormulaAccordion';
 
 const MOTIF_TEMPLATES: Record<string, { name: string; grid: number[][] }> = {
   qua_tram: {
@@ -250,8 +252,8 @@ export const Station02ThoCam: React.FC = () => {
           <div>
             <strong className="text-[#20332D]">Di sản văn hóa:</strong> {station.culturalHeritage}
           </div>
-          <div className="font-mono text-[#174C3C] font-semibold">
-            {station.keyFormula}
+          <div className="font-semibold text-[#174C3C]">
+            Đối xứng phẳng Frieze & Ma trận điểm dệt 8×8
           </div>
         </div>
       </div>
@@ -485,49 +487,57 @@ export const Station02ThoCam: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Live Frieze Band Preview */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-[#556D65]">
-                    <span className="font-semibold text-[#20332D]">Dải viền Frieze thổ cẩm hoàn chỉnh:</span>
-                    <span className="font-mono text-[#174C3C] font-bold">
-                      {repeatCount * 8} sợi dọc × 8 sợi ngang
-                    </span>
-                  </div>
+                {/* 3D Loom & Live Frieze Band Preview */}
+                <Station3DViewer
+                  stationId={2}
+                  params={{ motif: transformedMotif, palette }}
+                  title="Mô phỏng 3D Khung cửi & Cạp váy Thổ cẩm"
+                  subtitle="Thoi tre dệt tự động cập nhật trực tiếp theo lưới điểm 8×8 và bảng màu của bạn"
+                  interactionHint="Thay đổi các ô dệt 8×8 bên trái để quan sát hoa văn cập nhật tức thì trên tấm thổ cẩm 3D"
+                  heightClass="h-[340px] sm:h-[380px]"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs text-[#E8E2D5]">
+                      <span className="font-semibold">Dải viền Frieze thổ cẩm hoàn chỉnh (2D):</span>
+                      <span className="font-mono text-amber-300 font-bold">
+                        {repeatCount * 8} sợi dọc × 8 sợi ngang
+                      </span>
+                    </div>
 
-                  <div
-                    className="p-4 rounded-xl border border-[#E8E2D5] overflow-x-auto shadow-inner"
-                    style={{ backgroundColor: palette.bg }}
-                  >
-                    <div className="flex gap-1 min-w-max">
-                      {Array.from({ length: repeatCount }).map((_, rep) => (
-                        <div key={rep} className="grid grid-cols-8 gap-0.5 border-r border-[#20332D]/20 pr-1">
-                          {transformedMotif.map((row, r) =>
-                            row.map((val, c) => (
-                              <div
-                                key={`${rep}-${r}-${c}`}
-                                className="w-3.5 h-3.5 rounded-2xs"
-                                style={{
-                                  backgroundColor: val === 1 ? palette.fg : 'transparent',
-                                }}
-                              />
-                            ))
-                          )}
-                        </div>
-                      ))}
+                    <div
+                      className="p-4 rounded-xl border border-[#E8E2D5] overflow-x-auto shadow-inner"
+                      style={{ backgroundColor: palette.bg }}
+                    >
+                      <div className="flex gap-1 min-w-max">
+                        {Array.from({ length: repeatCount }).map((_, rep) => (
+                          <div key={rep} className="grid grid-cols-8 gap-0.5 border-r border-[#20332D]/20 pr-1">
+                            {transformedMotif.map((row, r) =>
+                              row.map((val, c) => (
+                                <div
+                                  key={`${rep}-${r}-${c}`}
+                                  className="w-3.5 h-3.5 rounded-2xs"
+                                  style={{
+                                    backgroundColor: val === 1 ? palette.fg : 'transparent',
+                                  }}
+                                />
+                              ))
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Station3DViewer>
 
-                {/* Mathematical Formulation Display */}
-                <div className="p-4 bg-[#FAF7F0] rounded-xl border border-[#E8E2D5] text-xs font-mono text-[#20332D] space-y-1.5">
-                  <div className="text-[#174C3C] font-sans font-bold">Công thức ánh xạ hình học phẳng:</div>
-                  <div>
-                    Vector tịnh tiến: T = (k · 8 · Δx, 0) với k ∈ [0, {repeatCount - 1}]
-                  </div>
-                  <div>
-                    Ma trận biến đổi: M = R({rotation}°) · [ {mirrorX ? '-1' : '1'} 0 ; 0 {mirrorY ? '-1' : '1'} ]
-                  </div>
-                </div>
+                {/* Collapsible Mathematical Formulation */}
+                <FormulaAccordion
+                  formula={station.keyFormula}
+                  description={`Vector tịnh tiến k ∈ [0, ${repeatCount - 1}] với góc quay ${rotation}° và đối xứng trục [X: ${mirrorX ? 'Có' : 'Không'}, Y: ${mirrorY ? 'Có' : 'Không'}].`}
+                  title="Xem công thức & Toán học đằng sau"
+                  principles={station.scientificBasis.principles}
+                  assumptions={station.scientificBasis.assumptions}
+                  variables={station.scientificBasis.variables}
+                />
 
                 {/* Actions */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-2">

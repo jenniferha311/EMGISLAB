@@ -33,7 +33,7 @@ export const GongInteractiveGraphic: React.FC<GongInteractiveGraphicProps> = ({
         {isVibrating && (
           <>
             <div className="absolute inset-0 rounded-full border-2 border-[#D6AA55] animate-ping pointer-events-none opacity-60" />
-            <div className="absolute inset-6 rounded-full border-2 border-[#A94438] animate-pulse pointer-events-none opacity-40" />
+            <div className="absolute inset-6 rounded-full border-2 border-[#A94438] pointer-events-none opacity-40" />
           </>
         )}
 

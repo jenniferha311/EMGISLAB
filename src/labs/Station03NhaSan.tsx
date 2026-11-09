@@ -10,6 +10,8 @@ import {
   toggleStationCompleted 
 } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
+import { Station3DViewer } from '../components/three/Station3DViewer';
+import { FormulaAccordion } from '../components/FormulaAccordion';
 
 export const Station03NhaSan: React.FC = () => {
   const station = STATIONS_DATA[2];
@@ -155,8 +157,8 @@ export const Station03NhaSan: React.FC = () => {
           <div>
             <strong className="text-[#20332D]">Di sản kiến trúc:</strong> {station.culturalHeritage}
           </div>
-          <div className="font-mono text-[#174C3C] font-semibold">
-            {station.keyFormula}
+          <div className="text-[#174C3C] font-semibold">
+            Vi khí hậu & Thông gió đối lưu tự nhiên
           </div>
         </div>
       </div>
@@ -208,157 +210,137 @@ export const Station03NhaSan: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left: 2D Architectural Cross-section Graphic (6 cols) */}
+            {/* Left: 3D & 2D Architectural Model (6 cols) */}
             <div className="lg:col-span-6 space-y-4">
-              <div className="bg-[#20332D] p-5 rounded-2xl border border-[#174C3C] shadow-sm text-white">
-                <div className="flex items-center justify-between text-xs text-[#E8E2D5] mb-2 font-mono">
-                  <span>MẶT CẮT 2D NHÀ SÀN & DÒNG GIÓ LÙA</span>
-                  <span className="text-[#D6AA55] font-bold">
-                    Vận tốc gió trong nhà: ~{indoorAirSpeed} m/s
-                  </span>
-                </div>
+              <Station3DViewer
+                stationId={3}
+                params={{ floorHeight, roofPitch, ventOpening, roofMaterial }}
+                title="Mô hình 3D Nhà sàn Mường & Luồng gió đối lưu"
+                subtitle={`Vận tốc gió trong nhà: ~${indoorAirSpeed} m/s · Nhiệt độ trong nhà: ${estimatedIndoorTemp}°C`}
+                interactionHint="Kéo thanh trượt chiều cao gầm sàn, độ dốc mái và cửa sổ để xem nhà sàn 3D biến đổi trực tiếp"
+                heightClass="h-[380px] sm:h-[420px]"
+              >
+                <div className="bg-[#20332D] p-4 rounded-xl border border-[#174C3C] text-white">
+                  <div className="flex items-center justify-between text-xs text-[#E8E2D5] mb-2 font-mono">
+                    <span>MẶT CẮT 2D NHÀ SÀN & DÒNG GIÓ LÙA</span>
+                    <span className="text-[#D6AA55] font-bold">
+                      Vận tốc gió trong nhà: ~{indoorAirSpeed} m/s
+                    </span>
+                  </div>
 
-                <div className="relative w-full h-64 sm:h-72 flex items-center justify-center">
-                  <svg viewBox="0 0 400 300" className="w-full h-full">
-                    <defs>
-                      <linearGradient id="skyGradNhaSan" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#174C3C" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#20332D" stopOpacity="0.1" />
-                      </linearGradient>
-                      <linearGradient id="groundGradNhaSan" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#3f2e1d" />
-                        <stop offset="100%" stopColor="#1e140d" />
-                      </linearGradient>
-                      <marker id="windArrowNhaSan" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#D6AA55" />
-                      </marker>
-                    </defs>
+                  <div className="relative w-full h-64 flex items-center justify-center">
+                    <svg viewBox="0 0 400 300" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="skyGradNhaSan" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#174C3C" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#20332D" stopOpacity="0.1" />
+                        </linearGradient>
+                        <linearGradient id="groundGradNhaSan" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#3f2e1d" />
+                          <stop offset="100%" stopColor="#1e140d" />
+                        </linearGradient>
+                        <marker id="windArrowNhaSan" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#D6AA55" />
+                        </marker>
+                      </defs>
 
-                    {/* Sky & Ground */}
-                    <rect x="0" y="0" width="400" height="250" fill="url(#skyGradNhaSan)" />
-                    <rect x="0" y="250" width="400" height="50" fill="url(#groundGradNhaSan)" />
+                      <rect x="0" y="0" width="400" height="250" fill="url(#skyGradNhaSan)" />
+                      <rect x="0" y="250" width="400" height="50" fill="url(#groundGradNhaSan)" />
+                      <line x1="0" y1="250" x2="400" y2="250" stroke="#174C3C" strokeWidth="2.5" />
 
-                    {/* Ground line */}
-                    <line x1="0" y1="250" x2="400" y2="250" stroke="#174C3C" strokeWidth="2.5" />
+                      <circle cx="50" cy="50" r="22" fill="#D6AA55" opacity="0.85" />
+                      <circle cx="50" cy="50" r="30" fill="#D6AA55" opacity="0.25" />
 
-                    {/* Sun radiation */}
-                    <circle cx="50" cy="50" r="22" fill="#D6AA55" opacity="0.85" />
-                    <circle cx="50" cy="50" r="30" fill="#D6AA55" opacity="0.25" className="animate-pulse" />
+                      {(() => {
+                        const floorY = 250 - floorHeight * 45;
+                        const roofPeakY = floorY - 50 - (roofPitch / 45) * 45;
+                        const roofEavesY = floorY - 20;
 
-                    {/* Stilt Pillars based on floorHeight */}
-                    {(() => {
-                      const floorY = 250 - floorHeight * 45;
-                      const roofPeakY = floorY - 50 - (roofPitch / 45) * 45;
-                      const roofEavesY = floorY - 20;
-
-                      return (
-                        <g>
-                          {/* 4 Pillars */}
-                          {[130, 180, 220, 270].map((x) => (
+                        return (
+                          <g>
+                            {[130, 180, 220, 270].map((x) => (
+                              <rect
+                                key={x}
+                                x={x - 4}
+                                y={floorY}
+                                width="8"
+                                height={250 - floorY}
+                                fill="#8A6627"
+                                stroke="#4A3411"
+                                strokeWidth="1"
+                              />
+                            ))}
                             <rect
-                              key={x}
-                              x={x - 4}
-                              y={floorY}
-                              width="8"
-                              height={250 - floorY}
-                              fill="#8A6627"
+                              x="110"
+                              y={floorY - 6}
+                              width="180"
+                              height="8"
+                              fill="#9C772F"
                               stroke="#4A3411"
                               strokeWidth="1"
                             />
-                          ))}
-
-                          {/* Floor Plank */}
-                          <rect
-                            x="110"
-                            y={floorY - 6}
-                            width="180"
-                            height="8"
-                            fill="#9C772F"
-                            stroke="#4A3411"
-                            strokeWidth="1"
-                          />
-
-                          {/* Wall / Living Area */}
-                          <rect
-                            x="120"
-                            y={roofEavesY}
-                            width="160"
-                            height={floorY - 6 - roofEavesY}
-                            fill="#D6AA55"
-                            opacity="0.2"
-                          />
-
-                          {/* Windows with ventOpening % */}
-                          <rect
-                            x="140"
-                            y={roofEavesY + 8}
-                            width={30 * (ventOpening / 100)}
-                            height="24"
-                            fill="#FAF7F0"
-                            opacity="0.8"
-                          />
-                          <rect
-                            x="230"
-                            y={roofEavesY + 8}
-                            width={30 * (ventOpening / 100)}
-                            height="24"
-                            fill="#FAF7F0"
-                            opacity="0.8"
-                          />
-
-                          {/* Roof Triangle (Palm Thatch vs Tin) */}
-                          <polygon
-                            points={`95,${roofEavesY} 200,${roofPeakY} 305,${roofEavesY}`}
-                            fill={roofMaterial === 'co_gianh' ? '#A94438' : '#8AA39B'}
-                            stroke="#D6AA55"
-                            strokeWidth="2"
-                          />
-
-                          {/* Underfloor Air Draft Arrows (Gió lùa gầm sàn) */}
-                          <path
-                            d={`M 30,${250 - (floorHeight * 45) / 2} Q 110,${250 - (floorHeight * 45) / 2} 370,${250 - (floorHeight * 45) / 2}`}
-                            fill="none"
-                            stroke="#D6AA55"
-                            strokeWidth="2"
-                            strokeDasharray="6 4"
-                            markerEnd="url(#windArrowNhaSan)"
-                          />
-
-                          {/* Roof Eaves Air Exhaust Draft (Gió thoát mái) */}
-                          <path
-                            d={`M 150,${roofEavesY + 20} Q 200,${roofPeakY + 15} 250,${roofPeakY - 10}`}
-                            fill="none"
-                            stroke="#FAF7F0"
-                            strokeWidth="1.5"
-                            strokeDasharray="4 3"
-                            opacity="0.8"
-                          />
-
-                          {/* Temperature Callouts */}
-                          <text x="25" y="105" fill="#FAF7F0" fontSize="11" fontWeight="bold">
-                            T ngoài: {outdoorTemp}°C
-                          </text>
-                          <text x="145" y={floorY - 15} fill="#D6AA55" fontSize="12" fontWeight="bold">
-                            T trong: {estimatedIndoorTemp}°C
-                          </text>
-                          <text x="145" y={floorY - 2} fill="#FAF7F0" fontSize="9">
-                            ΔT: -{coolingDelta.toFixed(1)}°C
-                          </text>
-                        </g>
-                      );
-                    })()}
-                  </svg>
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#FAF7F0]/90 border-t border-[#174C3C] pt-2.5">
-                  <div>
-                    Độ cao gầm sàn: <strong>{floorHeight}m</strong>
-                  </div>
-                  <div>
-                    Vật liệu mái: <strong>{roofMaterial === 'co_gianh' ? 'Lá cọ (R ≈ 1.8)' : 'Tôn (R ≈ 0.25)'}</strong>
+                            <rect
+                              x="120"
+                              y={roofEavesY}
+                              width="160"
+                              height={floorY - 6 - roofEavesY}
+                              fill="#D6AA55"
+                              opacity="0.2"
+                            />
+                            <rect
+                              x="140"
+                              y={roofEavesY + 8}
+                              width={30 * (ventOpening / 100)}
+                              height="24"
+                              fill="#FAF7F0"
+                              opacity="0.8"
+                            />
+                            <rect
+                              x="230"
+                              y={roofEavesY + 8}
+                              width={30 * (ventOpening / 100)}
+                              height="24"
+                              fill="#FAF7F0"
+                              opacity="0.8"
+                            />
+                            <polygon
+                              points={`95,${roofEavesY} 200,${roofPeakY} 305,${roofEavesY}`}
+                              fill={roofMaterial === 'co_gianh' ? '#A94438' : '#8AA39B'}
+                              stroke="#D6AA55"
+                              strokeWidth="2"
+                            />
+                            <path
+                              d={`M 30,${250 - (floorHeight * 45) / 2} Q 110,${250 - (floorHeight * 45) / 2} 370,${250 - (floorHeight * 45) / 2}`}
+                              fill="none"
+                              stroke="#D6AA55"
+                              strokeWidth="2"
+                              strokeDasharray="6 4"
+                              markerEnd="url(#windArrowNhaSan)"
+                            />
+                            <path
+                              d={`M 150,${roofEavesY + 20} Q 200,${roofPeakY + 15} 250,${roofPeakY - 10}`}
+                              fill="none"
+                              stroke="#FAF7F0"
+                              strokeWidth="1.5"
+                              strokeDasharray="4 3"
+                              opacity="0.8"
+                            />
+                            <text x="25" y="105" fill="#FAF7F0" fontSize="11" fontWeight="bold">
+                              T ngoài: {outdoorTemp}°C
+                            </text>
+                            <text x="145" y={floorY - 15} fill="#D6AA55" fontSize="12" fontWeight="bold">
+                              T trong: {estimatedIndoorTemp}°C
+                            </text>
+                            <text x="145" y={floorY - 2} fill="#FAF7F0" fontSize="9">
+                              ΔT: -{coolingDelta.toFixed(1)}°C
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
                   </div>
                 </div>
-              </div>
+              </Station3DViewer>
             </div>
 
             {/* Right: Architectural Parameter Controls (6 cols) */}
@@ -473,6 +455,15 @@ export const Station03NhaSan: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <FormulaAccordion
+            formula={station.keyFormula}
+            description={station.formulaDescription}
+            title="Xem công thức & Toán học đằng sau"
+            principles={station.scientificBasis.principles}
+            assumptions={station.scientificBasis.assumptions}
+            variables={station.scientificBasis.variables}
+          />
         </div>
       )}
 

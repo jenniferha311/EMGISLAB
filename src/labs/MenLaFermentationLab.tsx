@@ -30,7 +30,7 @@ import {
 } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 import { FormulaAccordion } from '../components/FormulaAccordion';
-import { MathFormula } from '../components/MathFormula';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 // Herbs used in traditional leaf yeast (Men lá Tày, Nùng, Thái, Dao)
 interface ForestHerb {
@@ -513,11 +513,23 @@ export const MenLaFermentationLab: React.FC = () => {
                 </button>
               </div>
 
-              {/* Graphic Display: Earthen Fermentation Jar or Microscope View */}
-              <div className="relative w-full h-84 bg-gradient-to-b from-[#141F19] to-[#0A120E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
-                {!microscopeView ? (
-                  /* ================= Normal View: Ceramic Jar (Chum gốm đất nung) ================= */
-                  <div className="relative w-full h-full flex flex-col items-center justify-center">
+              {/* 3D & 2D Graphic Display: Earthen Fermentation Jar or Microscope View */}
+              <Station3DViewer
+                stationId={14}
+                params={{ isSealed, microscopeView, temperature }}
+                onInteract={(actionId) => {
+                  if (actionId === 'toggle:seal') {
+                    setIsSealed((prev) => !prev);
+                  }
+                }}
+                title="Mô phỏng 3D Chum Gốm Ủ Men Lá & Vi Sinh Vật"
+                subtitle={`Nhiệt độ: ${temperature}°C · ${isSealed ? 'Đậy kín lá chuối (Yếm khí)' : 'Mở nắp (Hiếu khí)'} · Cồn: ${alcoholLevel}% ABV`}
+                interactionHint="Nhấn trực tiếp vào nắp lá chuối trên miệng chum 3D để đóng/mở chế độ yếm khí hoặc bật Kính hiển vi 3D"
+                heightClass="h-[360px] sm:h-[400px]"
+              >
+                <div className="relative w-full h-80 bg-gradient-to-b from-[#141F19] to-[#0A120E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
+                  {!microscopeView ? (
+                    <div className="relative w-full h-full flex flex-col items-center justify-center">
                     <svg viewBox="0 0 360 260" className="w-full h-full select-none">
                       {/* Ambient warm heat glow around jar */}
                       {temperature > 25 && (
@@ -685,6 +697,7 @@ export const MenLaFermentationLab: React.FC = () => {
                   </div>
                 )}
               </div>
+              </Station3DViewer>
 
               {/* Real-time Biological Metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
@@ -885,7 +898,7 @@ export const MenLaFermentationLab: React.FC = () => {
               <svg viewBox="0 0 420 260" className="w-full h-full select-none">
                 {/* Fireplace (Bếp củi đỏ lửa) */}
                 <path d="M 50,240 L 150,240 L 140,200 L 60,200 Z" fill="#334155" />
-                <path d="M 75,230 Q 100,185 125,230 Q 110,210 100,200 Q 90,210 75,230 Z" fill="#EF4444" className="animate-pulse" />
+                <path d="M 75,230 Q 100,185 125,230 Q 110,210 100,200 Q 90,210 75,230 Z" fill="#EF4444" />
                 <path d="M 85,230 Q 100,195 115,230 Z" fill="#F59E0B" />
 
                 {/* Copper Pot (Nồi đồng đun bỗng rượu) */}

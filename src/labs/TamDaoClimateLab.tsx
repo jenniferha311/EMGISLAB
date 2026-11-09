@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mountain, CloudRain, Wind, Thermometer, Droplets, CheckCircle2, AlertTriangle, Download, ArrowRight, ShieldCheck, Sun } from 'lucide-react';
 import { exportToCSV, getCurrentStudent, saveResearchLog } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 export const TamDaoClimateLab: React.FC = () => {
   const [activeModule, setActiveModule] = useState<'elevation' | 'foehn' | 'orographic_rain' | 'adaptive_house'>('elevation');
@@ -153,7 +154,15 @@ export const TamDaoClimateLab: React.FC = () => {
                 </span>
               </div>
 
-              <div className="relative w-full h-72">
+              <Station3DViewer
+                stationId={99}
+                params={{ targetElevation, lclElevation }}
+                title="Mô hình Địa hình 3D Dãy Núi Tam Đảo"
+                subtitle={`Vị trí khảo sát: ${targetElevation}m (~${calculatedTemp}°C) · Mực ngưng tụ mây: ${lclElevation}m`}
+                interactionHint="Kéo thanh trượt Độ cao khảo sát h₂ bên phải để di chuyển trạm đo 3D từ chân núi lên đỉnh Rùng Rình"
+                heightClass="h-[340px] sm:h-[380px]"
+              >
+                <div className="relative w-full h-72">
                 <svg viewBox="0 0 500 280" className="w-full h-full">
                   <defs>
                     <linearGradient id="mtnGradTamDao" x1="0" y1="0" x2="0" y2="1">
@@ -234,8 +243,9 @@ export const TamDaoClimateLab: React.FC = () => {
                       </g>
                     );
                   })}
-                </svg>
-              </div>
+                  </svg>
+                </div>
+              </Station3DViewer>
 
               <div className="flex items-center justify-between text-xs text-[#E8E2D5] border-t border-[#174C3C] pt-3">
                 <span>Ví dụ: Tại 100m là 28°C, lên 900m với Γ = 0.6°C/100m nhiệt độ còn 23.2°C.</span>

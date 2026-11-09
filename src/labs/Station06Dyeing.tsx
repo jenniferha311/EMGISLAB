@@ -26,6 +26,7 @@ import {
 } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 import { FormulaAccordion } from '../components/FormulaAccordion';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 // Types of natural plant dyes
 interface DyePlant {
@@ -416,121 +417,117 @@ export const Station06Dyeing: React.FC = () => {
       {activeStep === 4 && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Visual Experiment Canvas (7 cols): The Dye Vat, Suspended Cloth & Liquid Animation */}
+            {/* Visual Experiment Canvas (7 cols): 3D & 2D Dye Vat, Suspended Cloth & Liquid Animation */}
             <div className="lg:col-span-7 bg-[#1F2B25] p-5 sm:p-6 rounded-2xl border border-[#174C3C] text-white space-y-4 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-[#E8E2D5] font-bold flex items-center gap-1.5">
                   <Palette className="w-3.5 h-3.5 text-[#D6AA55]" />
                   PHÒNG THÍ NGHIỆM VẠI NHUỘM DÂN GIAN
                 </span>
-                <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                  isFabricDipped ? 'bg-amber-400 text-slate-900' : isOxidizing ? 'bg-emerald-400 text-slate-900 animate-pulse' : 'bg-slate-700 text-slate-200'
-                }`}>
-                  {isFabricDipped ? 'Đang ngâm trong vại' : isOxidizing ? 'Đang oxy hóa ngoài không khí' : 'Sẵn sàng nhúng vải'}
-                </span>
-              </div>
-
-              {/* Graphic Display: Clay Vat + Loom Fabric */}
-              <div className="relative w-full h-80 bg-gradient-to-b from-[#18231E] to-[#121B16] rounded-xl border border-white/10 flex flex-col items-center justify-between p-4 overflow-hidden">
-                {/* Background ambient lighting */}
-                <div 
-                  className="absolute inset-0 opacity-20 pointer-events-none transition-colors duration-700"
-                  style={{ backgroundColor: currentPlant.baseColor }}
-                />
-
-                {/* Bamboo Hanging Rack at Top */}
-                <div className="relative w-full max-w-xs flex flex-col items-center z-10">
-                  {/* Bamboo pole */}
-                  <div className="w-full h-3.5 bg-gradient-to-r from-[#854D0E] via-[#A16207] to-[#854D0E] rounded-full shadow-md border-b border-[#713F12] relative">
-                    <div className="absolute left-8 top-0 bottom-0 w-1 bg-[#451A03]/50" />
-                    <div className="absolute right-8 top-0 bottom-0 w-1 bg-[#451A03]/50" />
-                  </div>
-
-                  {/* Suspended Fabric Strip */}
-                  <div 
-                    className="relative transition-all duration-700 ease-in-out cursor-pointer group"
-                    style={{
-                      transform: isFabricDipped ? 'translateY(70px)' : 'translateY(8px)',
-                    }}
-                    onClick={handleDipToggle}
-                    title="Bấm vào tấm vải để nhúng hoặc vớt lên khỏi vại"
-                  >
-                    {/* Hanging ropes */}
-                    <div className="flex justify-between w-40 px-4">
-                      <div className="w-0.5 h-6 bg-[#D6AA55]" />
-                      <div className="w-0.5 h-6 bg-[#D6AA55]" />
-                    </div>
-
-                    {/* Cloth body with indigenous weave texture */}
-                    <div 
-                      className="w-40 h-36 rounded-b-md shadow-xl border border-white/20 relative overflow-hidden transition-colors duration-700"
-                      style={{
-                        backgroundColor: isFabricDipped && selectedPlantId === 'cham' ? '#657E52' : currentColor.hex,
-                      }}
-                    >
-                      {/* Subdued fabric weave pattern */}
-                      <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]" />
-                      {/* Thổ cẩm decorative border strip */}
-                      <div className="absolute bottom-2 left-0 right-0 h-4 bg-black/25 flex items-center justify-around px-2">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={i} className="w-2 h-2 rotate-45 bg-[#D6AA55]/80" />
-                        ))}
-                      </div>
-
-                      {/* Fabric Type Label */}
-                      <div className="absolute top-2 left-0 right-0 text-center text-[10px] font-bold text-white/80 tracking-wider">
-                        {fabricType === 'linen' ? 'VẢI LANH H\'MÔNG' : fabricType === 'silk' ? 'LỤA TƠ TẰM' : 'VẢI BÔNG THÔ'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom: Earthenware Vat (Chậu sành/đồng gốm nung) */}
-                <div className="relative w-72 h-32 flex flex-col items-center justify-end z-20">
-                  {/* Vat Opening & Liquid Surface */}
-                  <div className="w-64 h-12 rounded-full border-4 border-[#5E3A18] bg-[#3B230E] relative overflow-hidden shadow-inner flex items-center justify-center">
-                    {/* Liquid pool */}
-                    <div 
-                      className="w-full h-full opacity-90 transition-colors duration-500 relative flex items-center justify-center"
-                      style={{ backgroundColor: currentPlant.baseColor }}
-                    >
-                      {/* Liquid bubbles & ripples */}
-                      <div className="absolute inset-0 flex items-center justify-around opacity-60">
-                        <span className="w-3 h-3 rounded-full bg-white/20 animate-ping" />
-                        <span className="w-2 h-2 rounded-full bg-white/30 animate-pulse delay-200" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-white/20 animate-bounce delay-500" />
-                      </div>
-                      <span className="text-[10px] font-bold text-white/90 drop-shadow-sm font-mono">
-                        Dung dịch: {currentPlant.folkName} · pH {currentMordant.phValue}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Clay Vat body */}
-                  <div className="w-72 h-20 bg-gradient-to-b from-[#4A2810] via-[#5C3214] to-[#361B09] rounded-b-3xl border-x-4 border-b-4 border-[#301606] shadow-2xl relative flex items-center justify-center">
-                    {/* Cultural carved motif on pot */}
-                    <div className="text-[11px] font-bold text-[#D6AA55]/70 tracking-widest uppercase">
-                      Chậu gốm nung · {bathTemp}°C
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Action Button */}
-                <div className="absolute bottom-3 right-3 z-30">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${
+                    isFabricDipped ? 'bg-amber-400 text-slate-900' : isOxidizing ? 'bg-emerald-400 text-slate-900' : 'bg-slate-700 text-slate-200'
+                  }`}>
+                    {isFabricDipped ? 'Đang ngâm trong vại' : isOxidizing ? 'Đang oxy hóa ngoài không khí' : 'Sẵn sàng nhúng vải'}
+                  </span>
                   <button
                     type="button"
                     onClick={handleDipToggle}
-                    className={`min-h-[42px] px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg transition-all ${
+                    className={`px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition-all ${
                       isFabricDipped 
                         ? 'bg-[#A94438] text-white hover:bg-[#8D372C]' 
                         : 'bg-[#D6AA55] text-[#20332D] hover:bg-[#C29744]'
                     }`}
                   >
-                    <Droplets className="w-4 h-4" />
-                    {isFabricDipped ? 'Vớt vải ra phơi nắng & oxy hóa' : 'Nhúng tấm vải vào chậu'}
+                    <Droplets className="w-3.5 h-3.5" />
+                    {isFabricDipped ? 'Vớt vải ra phơi' : 'Nhúng vải vào chậu'}
                   </button>
                 </div>
               </div>
+
+              <Station3DViewer
+                stationId={6}
+                params={{
+                  liquidColor: currentPlant.baseColor,
+                  clothColor: isFabricDipped && selectedPlantId === 'cham' ? '#657E52' : currentColor.hex,
+                  isDipped: isFabricDipped,
+                }}
+                onInteract={(actionId) => {
+                  if (actionId === 'toggle:dip') {
+                    handleDipToggle();
+                  }
+                }}
+                title="Mô phỏng 3D Chậu Nhuộm Gốm & Tấm Vải Lanh"
+                subtitle={`Dung dịch: ${currentPlant.folkName} (${bathTemp}°C) · pH ${currentMordant.phValue}`}
+                interactionHint="Nhấn trực tiếp vào tấm vải 3D trên sào tre để nhúng xuống chậu nhuộm hoặc kéo lên oxy hóa"
+                heightClass="h-[360px] sm:h-[400px]"
+              >
+                {/* Graphic Display: 2D Clay Vat + Loom Fabric */}
+                <div className="relative w-full h-80 bg-gradient-to-b from-[#18231E] to-[#121B16] rounded-xl border border-white/10 flex flex-col items-center justify-between p-4 overflow-hidden">
+                  <div 
+                    className="absolute inset-0 opacity-20 pointer-events-none transition-colors duration-700"
+                    style={{ backgroundColor: currentPlant.baseColor }}
+                  />
+
+                  <div className="relative w-full max-w-xs flex flex-col items-center z-10">
+                    <div className="w-full h-3.5 bg-gradient-to-r from-[#854D0E] via-[#A16207] to-[#854D0E] rounded-full shadow-md border-b border-[#713F12] relative">
+                      <div className="absolute left-8 top-0 bottom-0 w-1 bg-[#451A03]/50" />
+                      <div className="absolute right-8 top-0 bottom-0 w-1 bg-[#451A03]/50" />
+                    </div>
+
+                    <div 
+                      className="relative transition-all duration-700 ease-in-out cursor-pointer group"
+                      style={{
+                        transform: isFabricDipped ? 'translateY(70px)' : 'translateY(8px)',
+                      }}
+                      onClick={handleDipToggle}
+                      title="Bấm vào tấm vải để nhúng hoặc vớt lên khỏi vại"
+                    >
+                      <div className="flex justify-between w-40 px-4">
+                        <div className="w-0.5 h-6 bg-[#D6AA55]" />
+                        <div className="w-0.5 h-6 bg-[#D6AA55]" />
+                      </div>
+
+                      <div 
+                        className="w-40 h-36 rounded-b-md shadow-xl border border-white/20 relative overflow-hidden transition-colors duration-700"
+                        style={{
+                          backgroundColor: isFabricDipped && selectedPlantId === 'cham' ? '#657E52' : currentColor.hex,
+                        }}
+                      >
+                        <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:6px_6px]" />
+                        <div className="absolute bottom-2 left-0 right-0 h-4 bg-black/25 flex items-center justify-around px-2">
+                          {Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="w-2 h-2 rotate-45 bg-[#D6AA55]/80" />
+                          ))}
+                        </div>
+
+                        <div className="absolute top-2 left-0 right-0 text-center text-[10px] font-bold text-white/80 tracking-wider">
+                          {fabricType === 'linen' ? 'VẢI LANH H\'MÔNG' : fabricType === 'silk' ? 'LỤA TƠ TẰM' : 'VẢI BÔNG THÔ'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative w-72 h-32 flex flex-col items-center justify-end z-20">
+                    <div className="w-64 h-12 rounded-full border-4 border-[#5E3A18] bg-[#3B230E] relative overflow-hidden shadow-inner flex items-center justify-center">
+                      <div 
+                        className="w-full h-full opacity-90 transition-colors duration-500 relative flex items-center justify-center"
+                        style={{ backgroundColor: currentPlant.baseColor }}
+                      >
+                        <span className="text-[10px] font-bold text-white/90 drop-shadow-sm font-mono">
+                          Dung dịch: {currentPlant.folkName} · pH {currentMordant.phValue}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="w-72 h-20 bg-gradient-to-b from-[#4A2810] via-[#5C3214] to-[#361B09] rounded-b-3xl border-x-4 border-b-4 border-[#301606] shadow-2xl relative flex items-center justify-center">
+                      <div className="text-[11px] font-bold text-[#D6AA55]/70 tracking-widest uppercase">
+                        Chậu gốm nung · {bathTemp}°C
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Station3DViewer>
 
               {/* Real-time Spectrophotometry & Swatch Bar */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">

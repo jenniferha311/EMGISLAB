@@ -26,6 +26,7 @@ import {
 } from '../utils/storage';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 import { FormulaAccordion } from '../components/FormulaAccordion';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 export const Station16RoofDrainage: React.FC = () => {
   const station = STATIONS_DATA.find((s) => s.id === 16) || STATIONS_DATA[15];
@@ -286,9 +287,23 @@ export const Station16RoofDrainage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Graphic Display Canvas */}
-              <div className="relative w-full h-84 bg-gradient-to-b from-[#15221B] to-[#0A130E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
-                <svg viewBox="0 0 460 280" className="w-full h-full select-none">
+              <Station3DViewer
+                stationId={16}
+                params={{
+                  pitchDeg,
+                  thatchThicknessCm,
+                  roofMaterial,
+                  weatherMode,
+                  isSimulating,
+                }}
+                title="Mô phỏng 3D Mái Cọ, Máng Tre & Dòng Nước Mưa"
+                subtitle={`Góc dốc θ = ${pitchDeg}° · Vận tốc thoát: ${drainVelocityMs} m/s · Lưu lượng: ${collectedLitersPerHour} L/h`}
+                interactionHint="Kéo thanh trượt Góc nghiêng mái (θ), Độ dày lớp lá cọ và Kịch bản mưa bão để xem mái nhà 3D biến đổi"
+                heightClass="h-[360px] sm:h-[400px]"
+              >
+                {/* 2D Graphic Display Canvas */}
+                <div className="relative w-full h-80 bg-gradient-to-b from-[#15221B] to-[#0A130E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
+                  <svg viewBox="0 0 460 280" className="w-full h-full select-none">
                   <defs>
                     <linearGradient id="palmThatchGrad" x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0%" stopColor="#854D0E" />
@@ -467,8 +482,9 @@ export const Station16RoofDrainage: React.FC = () => {
                       </g>
                     );
                   })()}
-                </svg>
-              </div>
+                  </svg>
+                </div>
+              </Station3DViewer>
 
               {/* Real-time Metric Indicators */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">

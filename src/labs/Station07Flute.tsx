@@ -25,6 +25,7 @@ import {
 import { audioEngine } from '../utils/audioEngine';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 import { FormulaAccordion } from '../components/FormulaAccordion';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 interface FluteHole {
   id: number;
@@ -304,342 +305,153 @@ export const Station07Flute: React.FC = () => {
       {activeStep === 4 && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left Graphic Display (7 cols): Virtual Bamboo Flute & Standing Wave Visualizer */}
+            {/* Left Graphic Display (7 cols): 3D & 2D Bamboo Flute & Standing Wave Visualizer */}
             <div className="lg:col-span-7 bg-[#1C2822] p-5 sm:p-6 rounded-2xl border border-[#174C3C] text-white space-y-4 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-[#E8E2D5] font-bold flex items-center gap-1.5">
                   <Music className="w-3.5 h-3.5 text-[#D6AA55]" />
                   MÔ PHỎNG CỘT KHÍ & LỖ BẤM SÁO TRÚC
                 </span>
-                <span className="text-[#D6AA55] font-bold">
-                  {isPlaying ? '● Đang phát âm thanh...' : '○ Sẵn sàng thổi'}
-                </span>
-              </div>
-
-              {/* Graphic Display Area: Bamboo Body & Hole Controls */}
-              <div className="relative w-full h-84 bg-gradient-to-b from-[#141E1A] to-[#0D1512] rounded-xl border border-white/10 p-4 flex flex-col justify-between overflow-hidden">
-                {/* Top: Acoustic Note & Frequency Header Badge */}
-                <div className="flex items-center justify-between z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="px-3 py-1 bg-[#174C3C] border border-[#D6AA55]/50 text-white rounded-lg font-mono font-bold text-sm shadow-md">
-                      Nốt {currentNote}
-                    </span>
-                    <span className="text-xs font-mono text-[#D6AA55] font-bold">
-                      {fundamentalFreq} Hz
-                    </span>
-                  </div>
-
-                  <div className="text-right text-[11px] font-mono text-[#8A9E96]">
-                    Vận tốc âm: <strong className="text-white">{Math.round(soundSpeedMs)} m/s</strong> (ở {airTempC}°C)
-                  </div>
-                </div>
-
-                {/* Center SVG: Realistic Bamboo Flute with Clickable Holes & Standing Waves */}
-                <div className="relative w-full h-44 flex items-center justify-center my-auto">
-                  <svg viewBox="0 0 540 180" className="w-full h-full select-none">
-                    <defs>
-                      {/* Realistic Bamboo Gradient */}
-                      <linearGradient id="bambooSkin" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#854D0E" />
-                        <stop offset="25%" stopColor="#B45309" />
-                        <stop offset="50%" stopColor="#D97706" />
-                        <stop offset="80%" stopColor="#92400E" />
-                        <stop offset="100%" stopColor="#451A03" />
-                      </linearGradient>
-
-                      {/* Standing Wave Glow */}
-                      <filter id="waveGlow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="3" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-
-                    {/* Flute Main Body (length adjusts with tubeLengthCm) */}
-                    {(() => {
-                      const fluteStartX = 40;
-                      // Max visual length 460px mapped to tubeLengthCm (25 to 60 cm)
-                      const fluteWidth = 240 + ((tubeLengthCm - 25) / 35) * 220;
-                      const fluteHeight = 36 + ((tubeDiameterMm - 10) / 10) * 14;
-                      const centerY = 90;
-                      const topY = centerY - fluteHeight / 2;
-
-                      // Embouchure hole at X = 95
-                      const embouchureX = fluteStartX + 55;
-
-                      // 6 Finger hole positions along the tube
-                      // Holes: 5 (closest to mouth) to 0 (farthest)
-                      const holeSpacing = (fluteWidth - 110) / 8;
-                      const holeXs = [
-                        fluteStartX + fluteWidth - holeSpacing * 1.5, // Hole 1 (index 0)
-                        fluteStartX + fluteWidth - holeSpacing * 2.3, // Hole 2
-                        fluteStartX + fluteWidth - holeSpacing * 3.1, // Hole 3
-                        fluteStartX + fluteWidth - holeSpacing * 4.3, // Hole 4
-                        fluteStartX + fluteWidth - holeSpacing * 5.1, // Hole 5
-                        fluteStartX + fluteWidth - holeSpacing * 5.9, // Hole 6 (index 5)
-                      ];
-
-                      return (
-                        <g>
-                          {/* Bamboo Tube Cylinder */}
-                          <rect
-                            x={fluteStartX}
-                            y={topY}
-                            width={fluteWidth}
-                            height={fluteHeight}
-                            rx={fluteHeight / 4}
-                            fill="url(#bambooSkin)"
-                            stroke="#78350F"
-                            strokeWidth="2"
-                            filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"
-                          />
-
-                          {/* Bamboo Nodes (Đốt tre nứa) */}
-                          <line
-                            x1={fluteStartX + 40}
-                            y1={topY}
-                            x2={fluteStartX + 40}
-                            y2={topY + fluteHeight}
-                            stroke="#451A03"
-                            strokeWidth="3"
-                            strokeDasharray="2 1"
-                          />
-                          <line
-                            x1={fluteStartX + fluteWidth * 0.48}
-                            y1={topY}
-                            x2={fluteStartX + fluteWidth * 0.48}
-                            y2={topY + fluteHeight}
-                            stroke="#451A03"
-                            strokeWidth="3.5"
-                          />
-
-                          {/* Bamboo grain lines */}
-                          <line
-                            x1={fluteStartX + 10}
-                            y1={centerY - fluteHeight * 0.25}
-                            x2={fluteStartX + fluteWidth - 10}
-                            y2={centerY - fluteHeight * 0.25}
-                            stroke="#F59E0B"
-                            strokeWidth="0.8"
-                            opacity="0.35"
-                          />
-
-                          {/* Embouchure blowing hole (Lỗ thổi) */}
-                          <ellipse
-                            cx={embouchureX}
-                            cy={centerY}
-                            rx="8"
-                            ry="6"
-                            fill="#18181B"
-                            stroke="#CA8A04"
-                            strokeWidth="2"
-                          />
-                          <text
-                            x={embouchureX}
-                            y={topY - 8}
-                            fill="#D6AA55"
-                            fontSize="10"
-                            textAnchor="middle"
-                            fontFamily="sans-serif"
-                            fontWeight="bold"
-                          >
-                            Lỗ thổi
-                          </text>
-
-                          {/* Interactive 6 Finger Holes */}
-                          {holeXs.map((hx, idx) => {
-                            const isOpen = holes[idx];
-                            const holeNumber = 6 - idx; // 6 near mouth, 1 at tip
-
-                            return (
-                              <g 
-                                key={idx} 
-                                className="cursor-pointer group"
-                                onClick={() => toggleHole(idx)}
-                              >
-                                {/* Glow hover ring */}
-                                <circle
-                                  cx={hx}
-                                  cy={centerY}
-                                  r="13"
-                                  fill={isOpen ? 'rgba(56, 189, 248, 0.2)' : 'rgba(214, 170, 85, 0.15)'}
-                                  className="group-hover:opacity-100 transition-opacity"
-                                />
-
-                                {/* Hole interior */}
-                                <circle
-                                  cx={hx}
-                                  cy={centerY}
-                                  r="7"
-                                  fill={isOpen ? '#0369A1' : '#27272A'}
-                                  stroke={isOpen ? '#38BDF8' : '#71717A'}
-                                  strokeWidth="2"
-                                />
-
-                                {/* If closed: Finger plugging representation */}
-                                {!isOpen && (
-                                  <circle
-                                    cx={hx}
-                                    cy={centerY}
-                                    r="4"
-                                    fill="#A16207"
-                                    opacity="0.8"
-                                  />
-                                )}
-
-                                {/* If open: Air vortex wave indicator */}
-                                {isOpen && (
-                                  <path
-                                    d={`M ${hx - 4},${centerY - 8} Q ${hx},${centerY - 14 + Math.sin(animTick * 0.2 + idx) * 3} ${hx + 4},${centerY - 8}`}
-                                    fill="none"
-                                    stroke="#38BDF8"
-                                    strokeWidth="1.5"
-                                  />
-                                )}
-
-                                {/* Hole Number & State Label */}
-                                <text
-                                  x={hx}
-                                  y={topY + fluteHeight + 14}
-                                  fill={isOpen ? '#38BDF8' : '#A1A1AA'}
-                                  fontSize="9"
-                                  textAnchor="middle"
-                                  fontFamily="monospace"
-                                  fontWeight="bold"
-                                >
-                                  Lỗ {holeNumber}
-                                </text>
-                                <text
-                                  x={hx}
-                                  y={topY + fluteHeight + 25}
-                                  fill={isOpen ? '#38BDF8' : '#71717A'}
-                                  fontSize="8"
-                                  textAnchor="middle"
-                                  fontFamily="sans-serif"
-                                >
-                                  {isOpen ? 'MỞ' : 'BỊT'}
-                                </text>
-                              </g>
-                            );
-                          })}
-
-                          {/* Dynamic Standing Wave Simulation (Sóng dừng âm học) */}
-                          {/* Active standing wave column extends from embouchure to first open hole or flute end */}
-                          {(() => {
-                            // Find active column end
-                            let activeHoleIdx = -1;
-                            for (let i = 5; i >= 0; i--) {
-                              if (holes[i]) {
-                                activeHoleIdx = i;
-                                break;
-                              }
-                            }
-                            const columnEnd = activeHoleIdx !== -1 ? holeXs[activeHoleIdx] : fluteStartX + fluteWidth;
-                            const waveWidth = columnEnd - embouchureX;
-                            const waveMidY = 32;
-
-                            // Sine wave path
-                            const pointsCount = 40;
-                            let waveD1 = `M ${embouchureX},${waveMidY} `;
-                            let waveD2 = `M ${embouchureX},${waveMidY} `;
-
-                            for (let p = 0; p <= pointsCount; p++) {
-                              const x = embouchureX + (p / pointsCount) * waveWidth;
-                              // Open-open tube: Antinodes (bụng sóng) at both open ends!
-                              // cos(pi * p / pointsCount) gives max at 0 and at ends
-                              const phase = (p / pointsCount) * Math.PI;
-                              const envelope = Math.cos(phase);
-                              const amp = Math.sin(animTick * 0.15) * 14 * envelope;
-                              waveD1 += `L ${x},${waveMidY + amp} `;
-                              waveD2 += `L ${x},${waveMidY - amp} `;
-                            }
-
-                            return (
-                              <g filter="url(#waveGlow)">
-                                {/* Background guide line */}
-                                <line
-                                  x1={embouchureX}
-                                  y1={waveMidY}
-                                  x2={columnEnd}
-                                  y2={waveMidY}
-                                  stroke="#38BDF8"
-                                  strokeWidth="0.8"
-                                  strokeDasharray="4 4"
-                                  opacity="0.4"
-                                />
-
-                                {/* Upper and lower envelope of standing wave */}
-                                <path
-                                  d={waveD1}
-                                  fill="none"
-                                  stroke="#38BDF8"
-                                  strokeWidth="2.5"
-                                  opacity="0.9"
-                                />
-                                <path
-                                  d={waveD2}
-                                  fill="none"
-                                  stroke="#38BDF8"
-                                  strokeWidth="1.5"
-                                  strokeDasharray="3 3"
-                                  opacity="0.6"
-                                />
-
-                                {/* Nodes & Antinodes labels */}
-                                <text
-                                  x={embouchureX}
-                                  y={waveMidY - 12}
-                                  fill="#38BDF8"
-                                  fontSize="9"
-                                  textAnchor="middle"
-                                  fontWeight="bold"
-                                >
-                                  Bụng sóng (Antinode)
-                                </text>
-                                <text
-                                  x={embouchureX + waveWidth * 0.5}
-                                  y={waveMidY - 12}
-                                  fill="#FDE047"
-                                  fontSize="9"
-                                  textAnchor="middle"
-                                  fontWeight="bold"
-                                >
-                                  Nút sóng (Node)
-                                </text>
-                                <text
-                                  x={columnEnd}
-                                  y={waveMidY - 12}
-                                  fill="#38BDF8"
-                                  fontSize="9"
-                                  textAnchor="middle"
-                                  fontWeight="bold"
-                                >
-                                  Bụng sóng (Lỗ thoát khí)
-                                </text>
-                              </g>
-                            );
-                          })()}
-                        </g>
-                      );
-                    })()}
-                  </svg>
-                </div>
-
-                {/* Bottom Sound Control Bar inside Canvas */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10 z-10 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#8A9E96]">Bấm vào từng lỗ sáo để đóng/mở hoặc thổi âm:</span>
-                  </div>
-
+                <div className="flex items-center gap-2">
+                  <span className="text-[#D6AA55] font-bold">
+                    {isPlaying ? 'Đang phát âm thanh...' : `Nốt ${currentNote} (${fundamentalFreq} Hz)`}
+                  </span>
                   <button
                     type="button"
                     onClick={handlePlayTone}
-                    className="min-h-[40px] px-5 py-2 bg-[#D6AA55] hover:bg-[#C29744] text-[#20332D] font-bold rounded-xl flex items-center gap-2 shadow-lg transition-transform active:scale-95"
+                    className="px-3 py-1 bg-[#D6AA55] hover:bg-[#C29744] text-[#20332D] font-bold rounded-lg flex items-center gap-1.5 shadow transition-transform active:scale-95"
                   >
-                    <Volume2 className="w-4 h-4 text-[#20332D]" />
-                    Thổi nốt sáo ({currentNote} – {fundamentalFreq} Hz)
+                    <Volume2 className="w-3.5 h-3.5 text-[#20332D]" />
+                    Thổi nốt {currentNote}
                   </button>
                 </div>
               </div>
+
+              <Station3DViewer
+                stationId={7}
+                params={{ tubeLengthCm, tubeDiameterMm, holes }}
+                onInteract={(actionId) => {
+                  if (actionId.startsWith('hole:')) {
+                    const idx = parseInt(actionId.split(':')[1], 10);
+                    if (!Number.isNaN(idx)) {
+                      toggleHole(idx);
+                    }
+                  }
+                }}
+                title="Mô phỏng 3D Sáo Trúc & Sóng Dừng Cột Khí"
+                subtitle={`Cột khí hiệu dụng: ${Math.round(effectiveLengthM * 100 * 10) / 10} cm · Vận tốc âm: ${Math.round(soundSpeedMs)} m/s`}
+                interactionHint="Nhấn trực tiếp vào 6 nút lỗ bấm 3D dọc thân sáo để mở/bịt lỗ và nghe âm thanh cộng hưởng"
+                heightClass="h-[360px] sm:h-[400px]"
+              >
+                {/* Graphic Display Area: 2D Bamboo Body & Hole Controls */}
+                <div className="relative w-full h-80 bg-gradient-to-b from-[#141E1A] to-[#0D1512] rounded-xl border border-white/10 p-4 flex flex-col justify-between overflow-hidden">
+                  <div className="flex items-center justify-between z-10">
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 bg-[#174C3C] border border-[#D6AA55]/50 text-white rounded-lg font-mono font-bold text-sm shadow-md">
+                        Nốt {currentNote}
+                      </span>
+                      <span className="text-xs font-mono text-[#D6AA55] font-bold">
+                        {fundamentalFreq} Hz
+                      </span>
+                    </div>
+
+                    <div className="text-right text-[11px] font-mono text-[#8A9E96]">
+                      Vận tốc âm: <strong className="text-white">{Math.round(soundSpeedMs)} m/s</strong> (ở {airTempC}°C)
+                    </div>
+                  </div>
+
+                  <div className="relative w-full h-44 flex items-center justify-center my-auto">
+                    <svg viewBox="0 0 540 180" className="w-full h-full select-none">
+                      <defs>
+                        <linearGradient id="bambooSkin" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#854D0E" />
+                          <stop offset="25%" stopColor="#B45309" />
+                          <stop offset="50%" stopColor="#D97706" />
+                          <stop offset="80%" stopColor="#92400E" />
+                          <stop offset="100%" stopColor="#451A03" />
+                        </linearGradient>
+                        <filter id="waveGlow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feGaussianBlur stdDeviation="3" result="blur" />
+                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                      </defs>
+
+                      {(() => {
+                        const fluteStartX = 40;
+                        const fluteWidth = 240 + ((tubeLengthCm - 25) / 35) * 220;
+                        const fluteHeight = 36 + ((tubeDiameterMm - 10) / 10) * 14;
+                        const centerY = 90;
+                        const topY = centerY - fluteHeight / 2;
+                        const embouchureX = fluteStartX + 55;
+                        const holeSpacing = (fluteWidth - 110) / 8;
+                        const holeXs = [
+                          fluteStartX + fluteWidth - holeSpacing * 1.5,
+                          fluteStartX + fluteWidth - holeSpacing * 2.3,
+                          fluteStartX + fluteWidth - holeSpacing * 3.1,
+                          fluteStartX + fluteWidth - holeSpacing * 4.3,
+                          fluteStartX + fluteWidth - holeSpacing * 5.1,
+                          fluteStartX + fluteWidth - holeSpacing * 5.9,
+                        ];
+
+                        return (
+                          <g>
+                            <rect
+                              x={fluteStartX}
+                              y={topY}
+                              width={fluteWidth}
+                              height={fluteHeight}
+                              rx={fluteHeight / 4}
+                              fill="url(#bambooSkin)"
+                              stroke="#78350F"
+                              strokeWidth="2"
+                            />
+                            <ellipse
+                              cx={embouchureX}
+                              cy={centerY}
+                              rx="8"
+                              ry="6"
+                              fill="#18181B"
+                              stroke="#CA8A04"
+                              strokeWidth="2"
+                            />
+                            {holeXs.map((hx, idx) => {
+                              const isOpen = holes[idx];
+                              const holeNumber = 6 - idx;
+                              return (
+                                <g
+                                  key={idx}
+                                  className="cursor-pointer group"
+                                  onClick={() => toggleHole(idx)}
+                                >
+                                  <circle
+                                    cx={hx}
+                                    cy={centerY}
+                                    r="7"
+                                    fill={isOpen ? '#0369A1' : '#27272A'}
+                                    stroke={isOpen ? '#38BDF8' : '#71717A'}
+                                    strokeWidth="2"
+                                  />
+                                  <text
+                                    x={hx}
+                                    y={topY + fluteHeight + 14}
+                                    fill={isOpen ? '#38BDF8' : '#A1A1AA'}
+                                    fontSize="9"
+                                    textAnchor="middle"
+                                    fontFamily="monospace"
+                                    fontWeight="bold"
+                                  >
+                                    Lỗ {holeNumber}
+                                  </text>
+                                </g>
+                              );
+                            })}
+                          </g>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+                </div>
+              </Station3DViewer>
 
               {/* Real-time Metric Indicators */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">

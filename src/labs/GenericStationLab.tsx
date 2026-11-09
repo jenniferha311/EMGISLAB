@@ -26,6 +26,7 @@ import {
 import { audioEngine } from '../utils/audioEngine';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
 import { FormulaAccordion } from '../components/FormulaAccordion';
+import { Station3DViewer } from '../components/three/Station3DViewer';
 
 interface GenericStationLabProps {
   stationId: number;
@@ -339,17 +340,37 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
       {activeStep === 4 && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Visual Canvas / SVG Interactive Panel (7 cols) */}
+            {/* Visual 3D & 2D Interactive Panel (7 cols) */}
             <div className="lg:col-span-7 bg-[#1F2B25] p-5 sm:p-6 rounded-2xl border border-[#174C3C] text-white space-y-4 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-[#E8E2D5] font-bold">MÔ HÌNH VẬT THỂ THÍ NGHIỆM TRỰC QUAN</span>
+                <span className="text-[#E8E2D5] font-bold">MÔ HÌNH VẬT THỂ THÍ NGHIỆM TRỰC QUAN 3D</span>
                 <span className="text-[#D6AA55] font-bold">
-                  {isRunning ? '● Đang hoạt động' : '○ Trạng thái tĩnh'}
+                  {isRunning ? 'Đang mô phỏng động lực học' : 'Trạng thái tĩnh'}
                 </span>
               </div>
 
-              {/* Graphic Display Area */}
-              <div className="relative w-full h-80 bg-gradient-to-b from-[#15221B] to-[#0A130E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
+              <Station3DViewer
+                stationId={stationId}
+                params={{ param1, param2, param3, selectMode, isRunning }}
+                onInteract={(actionId) => {
+                  if (actionId.startsWith('tone:')) {
+                    const freq = parseFloat(actionId.split(':')[1]);
+                    if (!Number.isNaN(freq)) {
+                      handlePlayTone(freq);
+                    }
+                  }
+                }}
+                title={`Mô phỏng 3D – ${station.title}`}
+                subtitle="Xoay 360° • Cuộn để phóng to • Tách lớp cấu trúc vật thể"
+                interactionHint={
+                  stationId === 13
+                    ? 'Nhấn trực tiếp vào từng ống tre 3D để gõ và nghe tần số cộng hưởng'
+                    : 'Điều chỉnh thanh trượt bên phải hoặc dùng thanh Tách lớp dưới đáy để quan sát chi tiết cấu tạo 3D'
+                }
+                heightClass="h-[360px] sm:h-[400px]"
+              >
+                {/* 2D Graphic Display Area */}
+                <div className="relative w-full h-80 bg-gradient-to-b from-[#15221B] to-[#0A130E] rounded-xl border border-white/10 flex items-center justify-center p-4 overflow-hidden">
                 {/* Station 4: Weaving Weft & Warp */}
                 {stationId === 4 && (
                   <svg viewBox="0 0 340 240" className="w-full h-full select-none">
@@ -436,7 +457,7 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                   <svg viewBox="0 0 340 240" className="w-full h-full select-none">
                     <rect width="100%" height="100%" fill="#181311" rx="8" />
                     {/* Firepit flame at bottom */}
-                    <path d="M 90,210 Q 120,165 150,210 Q 180,160 210,210 Q 230,170 250,210 Z" fill="#EF4444" className="animate-pulse" />
+                    <path d="M 90,210 Q 120,165 150,210 Q 180,160 210,210 Q 230,170 250,210 Z" fill="#EF4444" />
                     <path d="M 120,210 Q 170,175 220,210 Z" fill="#F59E0B" />
                     
                     {/* Green bamboo tube (Ống nứa tươi) */}
@@ -638,7 +659,8 @@ export const GenericStationLab: React.FC<GenericStationLabProps> = ({ stationId 
                     </text>
                   </svg>
                 )}
-              </div>
+                </div>
+              </Station3DViewer>
 
               {/* Station Audio preview if acoustic (Station 13) */}
               {stationId === 13 && (

@@ -22,6 +22,8 @@ import { WaveformCanvas } from '../components/audio/WaveformCanvas';
 import { SpectrumCanvas } from '../components/audio/SpectrumCanvas';
 import { GongInteractiveGraphic } from '../components/audio/GongInteractiveGraphic';
 import { MuongPatternBorder } from '../components/MuongPatternBorder';
+import { Station3DViewer } from '../components/three/Station3DViewer';
+import { FormulaAccordion } from '../components/FormulaAccordion';
 import { 
   saveResearchLog, 
   exportToCSV, 
@@ -586,14 +588,29 @@ export const Station01ChiengMuong: React.FC = () => {
           {/* MODE A: SYNTHETIC GONG LAB */}
           {labMode === 'synthetic' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Left Column: Interactive Gong & Quick Controls (5 cols) */}
+              {/* Left Column: Interactive 3D & 2D Gong & Quick Controls (5 cols) */}
               <div className="lg:col-span-5 space-y-5">
-                <GongInteractiveGraphic
-                  onStrike={handleStrike}
-                  isVibrating={isVibrating}
-                  selectedZone={strikeZone}
-                  malletType={malletType}
-                />
+                <Station3DViewer
+                  stationId={1}
+                  params={{ strikeZone, malletType, isVibrating }}
+                  onInteract={(actionId) => {
+                    if (actionId.startsWith('strike:')) {
+                      const zone = actionId.split(':')[1] as 'ron' | 'than' | 'vanh';
+                      handleStrike(zone);
+                    }
+                  }}
+                  title="Mô phỏng 3D Chiêng Mường & Giá gỗ"
+                  subtitle="Chạm trực tiếp vào Rốn, Thân hoặc Vành chiêng 3D để gõ"
+                  interactionHint="Nhấn vào Rốn (tâm), Thân hoặc Vành chiêng 3D để phát âm tổng hợp"
+                  heightClass="h-[380px] sm:h-[420px]"
+                >
+                  <GongInteractiveGraphic
+                    onStrike={handleStrike}
+                    isVibrating={isVibrating}
+                    selectedZone={strikeZone}
+                    malletType={malletType}
+                  />
+                </Station3DViewer>
 
                 {/* Preset & Mallet Configuration */}
                 <div className="bg-white p-5 rounded-2xl border border-[#E8E2D5] space-y-4 shadow-xs">
@@ -695,7 +712,7 @@ export const Station01ChiengMuong: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-bold text-[#174C3C] flex items-center gap-1.5 uppercase tracking-wider">
                       <Layers className="w-4 h-4 text-[#174C3C]" />
-                      5 Mode dao động thành phần: x(t) = Σ Aᵢ e^(-λᵢ t) sin(2π fᵢ t + φᵢ)
+                      5 Mode dao động thành phần của mặt chiêng
                     </div>
                     <button
                       type="button"
@@ -788,6 +805,15 @@ export const Station01ChiengMuong: React.FC = () => {
                     Lưu tham số vào Nhật ký khoa học
                   </button>
                 </div>
+
+                <FormulaAccordion
+                  formula={station.keyFormula}
+                  description={station.formulaDescription}
+                  title="Xem công thức & Toán học đằng sau"
+                  principles={station.scientificBasis.principles}
+                  assumptions={station.scientificBasis.assumptions}
+                  variables={station.scientificBasis.variables}
+                />
               </div>
             </div>
           )}
@@ -820,7 +846,7 @@ export const Station01ChiengMuong: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleStopRecording}
-                        className="min-h-[44px] px-4 py-2.5 bg-[#20332D] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 animate-pulse shadow-xs"
+                        className="min-h-[44px] px-4 py-2.5 bg-[#20332D] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs"
                       >
                         <Square className="w-4 h-4 text-[#A94438]" /> Dừng ghi âm
                       </button>
